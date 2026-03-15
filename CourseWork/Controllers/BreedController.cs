@@ -1,0 +1,51 @@
+﻿using CourseWork.DTOs;
+using CourseWork.Models;
+using CourseWork.Services;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CourseWork.Controllers;
+
+[ApiController]
+[Route("api/breeds")]
+public class BreedController(IBreedService breedService) : ControllerBase
+{
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllBreeds()
+    {
+        var breeds = await breedService.GetAllBreedsAsync();
+    
+        return Ok(breeds);
+    }
+
+
+    [HttpGet("{breedId}")]
+    public async Task<IActionResult> GetBreedById(int breedId)
+    {
+        var breed = await breedService.GetBreedByIdAsync(breedId);
+        
+        return Ok(breed);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateBreed([FromBody] BreedsDto breed)
+    {
+        var newBreed = await breedService.CreateBreedAsync(breed);
+        
+        return Ok(newBreed);
+    }
+
+    [HttpPut("{breedId}")]
+    public async Task<IActionResult> UpdateBreed(int breedId, [FromBody] BreedsDto breed)
+    {
+        var isUpdated = await breedService.UpdateBreedAsync(breedId, breed);
+        
+        if (!isUpdated) 
+        {
+            return NotFound($"Породу з ID {breedId} не знайдено."); 
+        }
+    
+        return NoContent();
+    }
+    
+}
