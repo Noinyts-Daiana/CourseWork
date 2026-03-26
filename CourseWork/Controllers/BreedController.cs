@@ -47,5 +47,13 @@ public class BreedController(IBreedService breedService) : ControllerBase
     
         return NoContent();
     }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> GetBreedsByName([FromQuery] string name)
+    {
+        var breeds = await breedService.GetBreedsByNameAsync(name);
+        
+        return Ok(breeds);
+    }
     
 }

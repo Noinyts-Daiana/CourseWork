@@ -10,6 +10,7 @@ public class AppDbContext : DbContext
 
     public DbSet<Breed> Breeds { get; set; } 
     public DbSet<Animal> Animals { get; set; }
+    public DbSet<AdoptAnimal> AdoptAnimals { get; set; }
     public DbSet<Specie> Species { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }

@@ -17,6 +17,8 @@ var app = builder.Build();
 builder.Services.AddScoped<IBreedRepository, BreedRepository>();
 builder.Services.AddScoped<IBreedService, BreedService>();
 
+builder.Services.AddScoped<ISpecieRepository, SpecieRepository>();
+
 // Це "дорожня карта" для запитів
 app.MapControllers(); 
 

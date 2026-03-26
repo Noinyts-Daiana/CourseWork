@@ -20,4 +20,6 @@ public class Breed
     
     [ForeignKey("SpecieId")] 
     public Specie Specie { get; set; } = null!; 
+    
+    
 }

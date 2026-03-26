@@ -56,4 +56,10 @@ public class BreedService(IBreedRepository breedRepository): IBreedService
        return true;
    }
 
+   public async  Task<IEnumerable<BreedsDto>> GetBreedsByNameAsync(string name)
+   {
+       var breeds = await breedRepository.GetBreedsByNameAsync(name);
+       
+       return breeds.Select(b => b.ToDto());
+   }
 }

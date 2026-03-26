@@ -7,7 +7,9 @@ public class BreedRepository(AppDbContext context) : IBreedRepository
 {
     public async Task<IEnumerable<Breed>> GetAllAsync()
     {
-        return await context.Breeds.ToListAsync();
+        return await context.Breeds
+            .Include(b => b.Specie) 
+            .ToListAsync();
     }
 
     public async Task<Breed?> GetByIdAsync(int id)
@@ -33,4 +35,10 @@ public class BreedRepository(AppDbContext context) : IBreedRepository
         await context.SaveChangesAsync();
     }
 
+    public async Task<IEnumerable<Breed>> GetBreedsByNameAsync(string name)
+    {
+        return await context.Breeds
+        .Where(b => b.Name.Contains(name))
+        .ToListAsync();
+    }
 }
