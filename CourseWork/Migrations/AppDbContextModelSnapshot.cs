@@ -31,7 +31,7 @@ namespace CourseWork.Migrations
 
                     b.Property<DateTime?>("AdoptDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("adopt_at");
 
                     b.Property<int>("AnimalId")
                         .HasColumnType("integer")
@@ -39,7 +39,7 @@ namespace CourseWork.Migrations
 
                     b.Property<DateTime>("ArrivalDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("arrival_at");
 
                     b.Property<int?>("OwnerId")
                         .HasColumnType("integer")

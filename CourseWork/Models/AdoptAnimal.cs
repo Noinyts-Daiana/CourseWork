@@ -17,10 +17,10 @@ public class AdoptAnimal
     [Column("owner_id")]
     public int? OwnerId { get; set; }
     
-    [Column("updated_at", TypeName = "timestamp with time zone")]
+    [Column("arrival_at", TypeName = "timestamp with time zone")]
     public DateTime ArrivalDate { get; set; } 
     
-    [Column("created_at", TypeName = "timestamp with time zone")]
+    [Column("adopt_at", TypeName = "timestamp with time zone")]
     public DateTime? AdoptDate { get; set; }
     
     
