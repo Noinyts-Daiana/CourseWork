@@ -10,6 +10,6 @@ public class AdoptAnimalDto
     public int? OwnerId { get; set; }
     public string? OwnerName { get; set; } 
     
-    public DateTime ArrivalDate { get; set; }
+    public DateTime? ArrivalDate { get; set; }
     public DateTime? AdoptDate { get; set; }
 }

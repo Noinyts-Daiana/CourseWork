@@ -1,6 +1,7 @@
 ﻿namespace CourseWork.DTOs;
 
-public class AnimalCharacteristicDTO
+public class AnimalCharacteristicDto
 {
-    
+    public int CharacteristicId { get; set; }
+    public int AnimalId { get; set; }
 }

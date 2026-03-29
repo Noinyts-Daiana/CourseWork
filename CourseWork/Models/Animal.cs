@@ -36,11 +36,11 @@ public class Animal
     
     [Required]
     [Column("weight")]
-    public double Weight { get; set; }
+    public decimal Weight { get; set; }
     
     [Required]
     [Column("height")]
-    public double Height { get; set; }
+    public decimal Height { get; set; }
     
     [Required]
     [Column("is_sterilized")]
@@ -50,13 +50,12 @@ public class Animal
     [Column("description")]
     public string? Description { get; set; }
     
-    [Required]
-    [Column("is_adopted")]
-    public bool IsAdopted { get; set; } = false;
     
     [ForeignKey("SpeciesId")]
     public Specie? Specie { get; set; }
 
     [ForeignKey("BreedId")]
     public Breed? Breed { get; set; }
+    
+    public ICollection<AnimalCharacteristic> AnimalCharacteristics { get; set; } = new List<AnimalCharacteristic>();
 }

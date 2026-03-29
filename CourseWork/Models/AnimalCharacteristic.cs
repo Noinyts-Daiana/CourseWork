@@ -16,4 +16,7 @@ public class AnimalCharacteristic
     [Required]
     [Column("characteristic_id")]
     public int CharacteristicId { get; set; }
+    
+    public Animal Animal { get; set; }
+    public Characteristic Characteristic { get; set; }
 }

@@ -14,4 +14,6 @@ public class AppDbContext : DbContext
     public DbSet<Specie> Species { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
+    public DbSet<Characteristic> Characteristics { get; set; }
+    public DbSet<AnimalCharacteristic> AnimalCharacteristics { get; set; }
 }

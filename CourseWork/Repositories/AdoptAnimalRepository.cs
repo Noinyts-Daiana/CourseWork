@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseWork.Repositories;
 
-public class AdoptAnimalRepositoty(AppDbContext context): IAdoptAnimalRepository
+public class AdoptAnimalRepository(AppDbContext context): IAdoptAnimalRepository
 {
     public async Task<AdoptAnimal?> GetByIdAsync(int id)
     {
@@ -43,5 +43,22 @@ public class AdoptAnimalRepositoty(AppDbContext context): IAdoptAnimalRepository
         {
             return false;
         }
+    }
+
+    public async Task<IEnumerable<AdoptAnimal>> GetAvailableAnimalsAsync()
+    {
+        return await context.AdoptAnimals
+            .Include(a => a.Animal)
+            .Where(aa => aa.OwnerId == null)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<AdoptAnimal>> GetByUserIdAsync(int ownerId)
+    {
+        var usersAnimal = await context.AdoptAnimals
+            .Include(aa => aa.Animal)
+            .Where(aa => aa.OwnerId == ownerId)
+            .ToListAsync();
+        return usersAnimal;
     }
 }

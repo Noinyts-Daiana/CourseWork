@@ -11,7 +11,7 @@ public static class AdoptAnimalMappers
         {
             AnimalId = adoptAnimalDto.AnimalId,
             OwnerId = adoptAnimalDto.OwnerId,
-            ArrivalDate = adoptAnimalDto.ArrivalDate,
+            ArrivalDate = adoptAnimalDto.ArrivalDate ?? DateTime.UtcNow,
             AdoptDate = adoptAnimalDto.AdoptDate,
         };
     }

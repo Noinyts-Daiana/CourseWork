@@ -11,6 +11,8 @@ public class AdoptAnimal
 
     [Required] [Column("animal_id")] 
     public int AnimalId { get; set; }
+    
+    public Animal Animal { get; set; }
 
     [Column("owner_id")]
     public int? OwnerId { get; set; }
