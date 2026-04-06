@@ -23,7 +23,7 @@ public class SpecieService(ISpecieRepository specieRepository) : ISpecieService
 
     public async Task AddSpecieAsync(SpeciesDto species)
     {
-        await specieRepository.AddSpecieAsync(species.ToEntityFromCreateDto());
+        await specieRepository.AddSpecieAsync(species.ToEntity());
     }
     
     public async Task DeleteSpecieAsync(int id)

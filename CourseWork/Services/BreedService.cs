@@ -10,7 +10,7 @@ public class BreedService(IBreedRepository breedRepository): IBreedService
 {
    public async Task<int> CreateBreedAsync(BreedsDto breedDto)
    {
-       var newBreed = breedDto.ToEntityFromCreateDto();
+       var newBreed = breedDto.ToEntity();
        await breedRepository.AddAsync(newBreed);
 
        return newBreed.Id;

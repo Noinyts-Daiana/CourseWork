@@ -14,7 +14,7 @@ public static class SpecieMappers
         };
     }
 
-    public static Specie ToEntityFromCreateDto(this SpeciesDto speciesDto)
+    public static Specie ToEntity(this SpeciesDto speciesDto)
     {
         return new Specie()
         {

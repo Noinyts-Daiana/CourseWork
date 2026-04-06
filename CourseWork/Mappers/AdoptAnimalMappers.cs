@@ -5,7 +5,7 @@ namespace CourseWork.Mappers;
 
 public static class AdoptAnimalMappers
 {
-    public static AdoptAnimal ToEntityFromCreateDto(this AdoptAnimalDto adoptAnimalDto)
+    public static AdoptAnimal ToEntity(this AdoptAnimalDto adoptAnimalDto)
     {
         return new AdoptAnimal
         {

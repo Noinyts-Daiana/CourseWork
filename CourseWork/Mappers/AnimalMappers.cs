@@ -5,7 +5,7 @@ namespace CourseWork.Mappers;
 
 public static class AnimalMappers
 {
-    public static Animal FromDtoToEntity(this AnimalDto animalDto)
+    public static Animal ToEntity(this AnimalDto animalDto)
     {
         return new Animal
         {

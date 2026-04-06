@@ -69,7 +69,7 @@ public class AnimalService(IAnimalRepository animalRepository, IAdoptAnimalServi
 
     public async Task UpdateAnimalAsync(AnimalDto animalDto)
     {
-        await animalRepository.UpdateAnimalAsync(animalDto.FromDtoToEntity());
+        await animalRepository.UpdateAnimalAsync(animalDto.ToEntity());
     }
 
 }

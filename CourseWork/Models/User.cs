@@ -18,6 +18,11 @@ public class User
     [Column("email")]
     public string Email { get; set; } = string.Empty; 
     
+    
+    [Required]
+    [Column("is_active")]
+    public bool IsActive { get; set; } = false;
+    
     [Column("role_id")]
     public int RoleId { get; set; }
     

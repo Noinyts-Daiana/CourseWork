@@ -19,7 +19,7 @@ public class AdoptAnimalService(IAdoptAnimalRepository adoptAnimalRepository, IA
                 ArrivalDate = arrivalDate
             };
 
-            var adoptRecordModel = adoptRecord.ToEntityFromCreateDto();
+            var adoptRecordModel = adoptRecord.ToEntity();
             await adoptAnimalRepository.CreateAdoptAnimal(adoptRecordModel);
             return new AdoptAnimalDto
             {

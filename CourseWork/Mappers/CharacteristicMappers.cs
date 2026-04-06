@@ -5,7 +5,7 @@ namespace CourseWork.Mappers;
 
 public static class CharacteristicMappers
 {
-    public static Characteristic ToEntityFromToDto(this CharacteristicDto characteristicDto)
+    public static Characteristic ToEntity(this CharacteristicDto characteristicDto)
     {
         return new Characteristic()
         {

@@ -14,7 +14,7 @@ public static class BreedMappers
         };
     }
     
-    public static Breed ToEntityFromCreateDto(this BreedsDto breedDto)
+    public static Breed ToEntity(this BreedsDto breedDto)
     {
         return new Breed
         {

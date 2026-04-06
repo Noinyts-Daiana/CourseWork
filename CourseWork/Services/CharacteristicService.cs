@@ -26,12 +26,12 @@ public class CharacteristicService(ICharacteristicRepository characteristicRepos
 
     public async Task AddCharacteristicAsync(CharacteristicDto characteristic)
     {
-        await characteristicRepository.AddCharacteristicAsync(characteristic.ToEntityFromToDto());
+        await characteristicRepository.AddCharacteristicAsync(characteristic.ToEntity());
     }
 
     public async Task UpdateCharacteristicAsync(CharacteristicDto characteristic)
     {
-        await characteristicRepository.UpdateCharacteristicAsync(characteristic.ToEntityFromToDto());
+        await characteristicRepository.UpdateCharacteristicAsync(characteristic.ToEntity());
     }
 
     public async Task DeleteCharacteristicAsync(int characteristicId)
