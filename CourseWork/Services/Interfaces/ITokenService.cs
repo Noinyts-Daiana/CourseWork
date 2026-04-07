@@ -3,5 +3,5 @@
 public interface ITokenService
 {
     void SetAuthCookie(string token);
-    string GenerateJwtToken(string email, string role);
+    string GenerateJwtToken(int id, string role);
 }

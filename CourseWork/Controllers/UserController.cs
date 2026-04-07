@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using CourseWork.Models;
 using CourseWork.DTOs;
+using CourseWork.Repositories;
 using CourseWork.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -9,13 +12,24 @@ namespace CourseWork.Controllers;
 
 [ApiController]
 [Route("api/users")]
-public class UsersController(IUserService userService, ITokenService tokenService): ControllerBase
+public class UsersController(
+   IUserService userService, 
+   ITokenService tokenService, 
+   ILogger<UsersController> logger) : ControllerBase
 {
    [HttpGet]
-   public async Task<IActionResult> GetUsers()
+   public async Task<IActionResult> GetUsers(
+      [FromQuery] int pageNumber = 1, 
+      [FromQuery] int pageSize = 10)
    {
-      var users = await userService.GetUsers();
-      return Ok(users);
+      var users = await userService.GetUsers(pageNumber, pageSize);
+     
+      return Ok(new {
+         items = users,
+         totalCount = await userService.GetTotalUsersCountAsync(),
+         pageNumber = pageNumber,
+         pageSize = pageSize
+      });
    }
 
    [HttpGet("{id:int}")]
@@ -35,31 +49,62 @@ public class UsersController(IUserService userService, ITokenService tokenServic
    [HttpPost("register")]
    public async Task<IActionResult> CreateUser([FromBody] UserDto userDto)
    {
-      try 
-      {
-         var createdUser = await userService.AddUser(userDto);
+      var createdUser = await userService.AddUser(userDto);
 
-         var token = tokenService.GenerateJwtToken(userDto.Email, "User");
-         tokenService.SetAuthCookie(token);
+      var token = tokenService.GenerateJwtToken(createdUser.UserId, "User"); 
+   
+      tokenService.SetAuthCookie(token);
       
-         return Ok(new 
-         {
-            User = createdUser,
-            Message = "Реєстрація успішна!"
-         });
-      }
-      catch (InvalidOperationException ex) 
+      return Ok(new 
       {
-         return BadRequest(new { message = ex.Message });
-      }
-      catch (DbUpdateException ex) when (ex.InnerException is Npgsql.PostgresException { SqlState: "23505" })
-      {
-         return Conflict(new { message = "Користувач із такою електронною поштою вже зареєстрований." });
-      }
-      catch (Exception ex)
-      {
-         return StatusCode(500, new { message = "Сталася помилка на сервері: " + ex.Message });
-      }
+         User = createdUser,
+         Message = "Реєстрація успішна!"
+      });  
+   }
+
+   [HttpGet("me")]
+   [Authorize]
+   public async Task<IActionResult> GetMe()
+   {
+      var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+      logger.LogInformation("Спроба отримати профіль для ID із токена: '{Id}'", userIdString);
+
+      var userId = int.Parse(userIdString);
+      var user = await userService.GetUserById(userId);
+
+      return Ok(user);
+   }
+
+   [HttpPut("{id:int}")]
+   [Authorize]
+   public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDto userDto)
+   {
+      var user = await userService.UpdateUserAsync(id, userDto);
+      return Ok(user);
+   }
+
+   [HttpPut("me")]
+   [Authorize]
+   public async Task<IActionResult> UpdateUser([FromBody] UserDto userDto)
+   {
+      var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+      
+      var userId = int.Parse(userIdString);
+      
+      await userService.UpdateUserAsync(userId, userDto);
+      return Ok();
+   }
+
+   [HttpPut("me/password")]
+   [Authorize]
+   public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+   {
+      var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+      var userId = int.Parse(userIdString!); 
+
+      await userService.UpdatePassword(userId, dto);
+    
+      return Ok(new { message = "Пароль успішно змінено!" });
    }
 }
 

@@ -7,9 +7,9 @@ namespace CourseWork.Services;
 
 public class UserService(IUserRepository userRepository): IUserService
 {
-    public async Task<IEnumerable<UserDto>> GetUsers()
+    public async Task<IEnumerable<UserDto>> GetUsers(int pageNumber, int pageSize)
     {
-        var users = await userRepository.GetUsersAsync();
+        var users = await userRepository.GetUsersAsync( pageNumber, pageSize);
 
         var usersDto = users.Select(u => u.ToDto());
         
@@ -33,39 +33,46 @@ public class UserService(IUserRepository userRepository): IUserService
     public async Task<UserDto> AddUser(UserDto userDto)
     {
         var existingUser = await userRepository.GetByEmailAsync(userDto.Email);
-    
         if (existingUser != null)
         {
             throw new InvalidOperationException("Користувач з таким Email вже існує.");
         }
-        
-        var user = new UserDto()
-        {
-            FullName = userDto.FullName,
-            Email = userDto.Email,
-            RoleId = userDto.RoleId,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password)
-        };
-        
-        await userRepository.AddUserAsync(user.ToEntity());
-        return user;
+    
+        var userEntity = userDto.ToEntity();
+        userEntity.Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
+        userEntity.IsActive = true;
+        userEntity.CreatedAt = DateTime.UtcNow;
+
+        await userRepository.AddUserAsync(userEntity);
+    
+        return userEntity.ToDto();
     }
 
 
-    public async Task<bool> UpdatePassword(int userId, string newPassword)
+    public async Task<bool> UpdatePassword(int userId, ChangePasswordDto dto)
     {
         var user = await userRepository.GetUserByIdAsync(userId);
         if (user == null)
         {
             return false;
         }
+
+        bool isCurrentPasswordValid = BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.Password);
+        if (!isCurrentPasswordValid) 
+        {
+            throw new InvalidOperationException("Поточний пароль введено неправильно.");
+        }
+
+        bool isSameAsOld = BCrypt.Net.BCrypt.Verify(dto.NewPassword, user.Password);
+        if (isSameAsOld)
+        {
+            throw new InvalidOperationException("Новий пароль не може бути таким самим, як поточний.");
+        }
         
-        user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        user.Password = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
     
         user.UpdatedAt = DateTime.UtcNow;
-        await userRepository.UpdateUserAsync(user);
+        await userRepository.UpdateUserAsync(userId, user);
         return true;
     }
     
@@ -85,7 +92,7 @@ public class UserService(IUserRepository userRepository): IUserService
     
         existingUser.UpdatedAt = DateTime.UtcNow;
 
-        await userRepository.UpdateUserAsync(existingUser);
+        await userRepository.UpdateUserAsync(userId, existingUser);
 
         return existingUser.ToDto();
     }
@@ -100,5 +107,11 @@ public class UserService(IUserRepository userRepository): IUserService
         var users = await userRepository.GetUserByRole(roleId);
         var usersDto = users.Select(u => u.ToDto());
         return usersDto;
+    }
+
+    public async Task<int> GetTotalUsersCountAsync()
+    {
+        var users = await userRepository.GetTotalUsersCountAsync();
+        return users;
     }
 }

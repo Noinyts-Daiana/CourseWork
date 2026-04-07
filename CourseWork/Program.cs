@@ -13,7 +13,37 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 
-var jwtSettings = builder.Configuration.GetSection("Jwt");
+builder.Services.AddAuthentication(options =>
+    {
+        // Кажемо, що за замовчуванням використовуємо JWT Bearer
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+
+        // МАГІЯ ДЛЯ КУК:
+        // Оскільки ми поклали токен у куку "token", 
+        // нам треба сказати серверу діставати його звідти
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                context.Token = context.Request.Cookies["token"];
+                return Task.CompletedTask;
+            }
+        };
+    });
 
 builder.Services.AddCors(options =>
 {
@@ -66,6 +96,8 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Shelter API V1");
     });
 }
+
+app.UseMiddleware<CourseWork.Middlewares.ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 

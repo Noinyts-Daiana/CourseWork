@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using CourseWork.Services;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 
 public class TokenService : ITokenService
@@ -15,11 +16,11 @@ public class TokenService : ITokenService
         _config = config;
     }
 
-    public string GenerateJwtToken(string email, string role)
+    public string GenerateJwtToken(int id, string role)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Email, email),
+            new Claim(ClaimTypes.NameIdentifier, id.ToString()),
             new Claim(ClaimTypes.Role, role)
         };
 
