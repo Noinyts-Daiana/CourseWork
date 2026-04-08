@@ -8,19 +8,19 @@ public class AnimalCharacteristicRepository(AppDbContext context): IAnimalCharac
 {
     public async Task AddAsync(AnimalCharacteristic animalCharacteristic)
     {
-       context.AnimalCharacteristics.Add(animalCharacteristic);
+       context.AnimalCharacteristic.Add(animalCharacteristic);
        await context.SaveChangesAsync();
     }
 
     public async Task RemoveAsync(AnimalCharacteristic animalCharacteristic)
     {
-        context.AnimalCharacteristics.Remove(animalCharacteristic);
+        context.AnimalCharacteristic.Remove(animalCharacteristic);
         await context.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<Characteristic>> GetCharacteristicsByAnimalIdAsync(int animalId)
     {
-        var characteristic = await context.AnimalCharacteristics
+        var characteristic = await context.AnimalCharacteristic
             .Where(ac => ac.AnimalId == animalId)
             .Select(ac => ac.Characteristic)
             .ToListAsync();
@@ -30,7 +30,7 @@ public class AnimalCharacteristicRepository(AppDbContext context): IAnimalCharac
 
     public async Task<IEnumerable<Animal>> GetAnimalsByCharacteristicIdAsync(int characteristicId)
     {
-        var animal = await context.AnimalCharacteristics
+        var animal = await context.AnimalCharacteristic
             .Where(ac => ac.CharacteristicId == characteristicId)
             .Select(ac => ac.Animal)
             .ToListAsync();
@@ -40,7 +40,7 @@ public class AnimalCharacteristicRepository(AppDbContext context): IAnimalCharac
 
     public async Task RemoveAllForAnimalAsync(int animalId)
     {
-        await context.AnimalCharacteristics
+        await context.AnimalCharacteristic
             .Where(ac => ac.AnimalId == animalId)
             .ExecuteDeleteAsync();
     }

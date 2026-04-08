@@ -4,7 +4,7 @@ namespace CourseWork.Services;
 
 public interface IUserService
 {
-    Task<IEnumerable<UserDto>> GetUsers(int pageNumber, int pageSize);
+    Task<IEnumerable<UserDto>> GetUsers(int pageNumber, int pageSize, string? searchTerm);
     Task<UserDto?> GetUserById(int userId);
     Task<UserDto?> GetUserByEmail(string email);
     Task<UserDto> AddUser(UserDto userDto);

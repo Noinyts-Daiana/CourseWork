@@ -8,15 +8,16 @@ public class AppDbContext : DbContext
     { 
     }
 
-    public DbSet<Breed> Breeds { get; set; } 
-    public DbSet<Animal> Animals { get; set; }
-    public DbSet<AdoptAnimal> AdoptAnimals { get; set; }
-    public DbSet<Specie> Species { get; set; }
-    public DbSet<User> Users { get; set; }
-    public DbSet<Role> Roles { get; set; }
-    public DbSet<Characteristic> Characteristics { get; set; }
-    public DbSet<AnimalCharacteristic> AnimalCharacteristics { get; set; }
+    public DbSet<Breed> Breed { get; set; } 
+    public DbSet<Animal> Animal { get; set; }
+    public DbSet<AdoptAnimal> AdoptAnimal { get; set; }
+    public DbSet<Specie> Specie { get; set; }
+    public DbSet<User> User { get; set; }
+    public DbSet<Role> Role { get; set; }
+    public DbSet<Characteristic> Characteristic { get; set; }
+    public DbSet<AnimalCharacteristic> AnimalCharacteristic { get; set; }
 
+    public DbSet<MedicalExam> MedicalExam { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

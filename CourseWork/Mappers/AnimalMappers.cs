@@ -25,6 +25,7 @@ public static class AnimalMappers
     {
         return new AnimalDto()
         {
+            Id = animal.Id,
             Name = animal.Name,
             Birthday = animal.Birthday,
             BreedId = animal.BreedId,

@@ -20,9 +20,10 @@ public class UsersController(
    [HttpGet]
    public async Task<IActionResult> GetUsers(
       [FromQuery] int pageNumber = 1, 
-      [FromQuery] int pageSize = 10)
+      [FromQuery] int pageSize = 9,
+      [FromQuery] string? searchTerm = null)
    {
-      var users = await userService.GetUsers(pageNumber, pageSize);
+      var users = await userService.GetUsers(pageNumber, pageSize, searchTerm);
      
       return Ok(new {
          items = users,
@@ -105,6 +106,14 @@ public class UsersController(
       await userService.UpdatePassword(userId, dto);
     
       return Ok(new { message = "Пароль успішно змінено!" });
+   }
+
+
+   [HttpPost]
+   public async Task<IActionResult> AddUser([FromBody] UserDto userDto)
+   {
+      var user = await userService.AddUser(userDto);
+      return Ok(user);
    }
 }
 

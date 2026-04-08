@@ -7,9 +7,9 @@ namespace CourseWork.Services;
 
 public class UserService(IUserRepository userRepository): IUserService
 {
-    public async Task<IEnumerable<UserDto>> GetUsers(int pageNumber, int pageSize)
+    public async Task<IEnumerable<UserDto>> GetUsers(int pageNumber, int pageSize, string? searchTerm)
     {
-        var users = await userRepository.GetUsersAsync( pageNumber, pageSize);
+        var users = await userRepository.GetUsersAsync( pageNumber, pageSize, searchTerm);
 
         var usersDto = users.Select(u => u.ToDto());
         

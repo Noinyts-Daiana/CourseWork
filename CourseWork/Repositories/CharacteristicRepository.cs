@@ -7,27 +7,27 @@ public class CharacteristicRepository(AppDbContext context): ICharacteristicRepo
 {
     public async Task<IEnumerable<Characteristic>> GetCharacteristicsAsync()
     {
-        return await context.Characteristics.ToListAsync();
+        return await context.Characteristic.ToListAsync();
     }
 
     public async Task<Characteristic?> GetCharacteristicsByIdAsync(int id)
     {
-        return await context.Characteristics.FirstOrDefaultAsync(c => c.Id == id);
+        return await context.Characteristic.FirstOrDefaultAsync(c => c.Id == id);
     }
 
     public async Task AddCharacteristicAsync(Characteristic characteristic)
     {
-        context.Characteristics.Add(characteristic);
+        context.Characteristic.Add(characteristic);
         await context.SaveChangesAsync();
     }
 
     public async Task DeleteCharacteristicAsync(int characteristicId)
     {
-        Characteristic? characteristic = context.Characteristics.FirstOrDefault(a => a.Id == characteristicId);
+        Characteristic? characteristic = context.Characteristic.FirstOrDefault(a => a.Id == characteristicId);
 
         if (characteristic != null)
         {
-            context.Characteristics.Remove(characteristic);
+            context.Characteristic.Remove(characteristic);
             await context.SaveChangesAsync();
            
         }
@@ -35,7 +35,7 @@ public class CharacteristicRepository(AppDbContext context): ICharacteristicRepo
 
     public async Task UpdateCharacteristicAsync(Characteristic characteristic)
     {
-        context.Characteristics.Update(characteristic);
+        context.Characteristic.Update(characteristic);
         await context.SaveChangesAsync();
     }
 }

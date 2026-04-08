@@ -75,6 +75,7 @@ builder.Services.AddScoped<ISpecieRepository, SpecieRepository>();
 builder.Services.AddScoped<ICharacteristicRepository, CharacteristicRepository>();
 builder.Services.AddScoped<IAdoptAnimalRepository, AdoptAnimalRepository>();
 builder.Services.AddScoped<IAnimalCharacteristicRepository, AnimalCharacteristicRepository>();
+builder.Services.AddScoped<IMedicalExamRepository, MedicalExamRepository>();
 
 // 5. РЕЄСТРАЦІЯ СЕРВІСІВ
 builder.Services.AddScoped<IAnimalService, AnimalService>();
@@ -84,6 +85,7 @@ builder.Services.AddScoped<ISpecieService, SpecieService>();
 builder.Services.AddScoped<ICharacteristicService, CharacteristicService>();
 builder.Services.AddScoped<IAdoptAnimalService, AdoptAnimalService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IMedicalExamService, MedicalService>();
 
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();

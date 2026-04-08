@@ -6,17 +6,29 @@ namespace CourseWork.Repositories;
 public class AnimalRepository(AppDbContext context): IAnimalRepository
 {
 
-    public async Task<IEnumerable<Animal>> GetAnimalsAsync()
+    public async Task<IEnumerable<Animal>> GetAnimalsAsync(int pageNumber, int pageSize, string? searchTerm)
     {
-        return await context.Animals
+        var query = context.Animal.AsQueryable();
+
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            query = query.Where(a => a.Name.Contains(searchTerm));
+            return query;
+        }
+        
+        int skip = (pageNumber - 1) * pageSize;
+        return await context.Animal
             .Include(a => a.Specie)
             .Include(a => a.Breed)
+            .OrderBy(a => a.Name)
+            .Skip(skip)
+            .Take(pageSize)
             .ToListAsync();
     }
 
     public async Task<Animal?> GetAnimalByIdAsync(int id)
     {
-        return await context.Animals
+        return await context.Animal
             .Include(a => a.Specie)
             .Include(a => a.Breed)
             .FirstOrDefaultAsync(a => a.Id == id);
@@ -24,7 +36,7 @@ public class AnimalRepository(AppDbContext context): IAnimalRepository
 
     public async Task<IEnumerable<Animal>> GetAnimalsByNameAsync(string animalName)
     {
-        return await context.Animals
+        return await context.Animal
             .Include(a => a.Specie)
             .Include(a => a.Breed)
             .Where(a => a.Name.Contains(animalName)) 
@@ -33,7 +45,7 @@ public class AnimalRepository(AppDbContext context): IAnimalRepository
 
     public async Task<IEnumerable<Animal>> GetAnimalsByBreedAsync(int breedId)
     {
-        return await context.Animals
+        return await context.Animal
             .Include(a => a.Specie)
             .Include(a => a.Breed)
             .Where(a => a.BreedId == breedId)
@@ -42,7 +54,7 @@ public class AnimalRepository(AppDbContext context): IAnimalRepository
 
     public async Task<IEnumerable<Animal>> GetAnimalsBySpeciesAsync(int speciesId)
     {
-        return await context.Animals
+        return await context.Animal
             .Include(a => a.Specie)
             .Include(a => a.Breed)
             .Where(a => a.SpeciesId == speciesId)
@@ -51,7 +63,7 @@ public class AnimalRepository(AppDbContext context): IAnimalRepository
 
     public async Task<IEnumerable<Animal>> GetAnimalsByGenderAsync(Sex sex)
     {
-        return await context.Animals
+        return await context.Animal
             .Include(a => a.Specie)
             .Include(a => a.Breed)
             .Where(a => a.Sex == sex)
@@ -61,25 +73,30 @@ public class AnimalRepository(AppDbContext context): IAnimalRepository
 
     public async Task<Animal> AddAnimalAsync(Animal animal)
     {
-        context.Animals.Add(animal);
+        context.Animal.Add(animal);
         await context.SaveChangesAsync();
         return animal;
     }
 
     public async Task UpdateAnimalAsync(Animal animal)
     {
-        context.Animals.Update(animal);
+        context.Animal.Update(animal);
         await context.SaveChangesAsync();
     }
 
     public async Task DeleteAnimalAsync(int id)
     {
-        var animal = await context.Animals.FindAsync(id); 
+        var animal = await context.Animal.FindAsync(id); 
     
         if (animal != null)
         {
-            context.Animals.Remove(animal);
+            context.Animal.Remove(animal);
             await context.SaveChangesAsync(); 
         }
+    }
+
+    public async Task<int> GetAnimalsCountAsync()
+    {
+        return await context.Animal.CountAsync();
     }
 }

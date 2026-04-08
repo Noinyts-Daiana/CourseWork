@@ -8,9 +8,9 @@ namespace CourseWork.Services;
 
 public class AnimalService(IAnimalRepository animalRepository, IAdoptAnimalService adoptionService): IAnimalService
 {
-    public async Task<IEnumerable<AnimalDto>> GetAllAnimalsAsync()
+    public async Task<IEnumerable<AnimalDto>> GetAllAnimalsAsync(int pageNumber, int pageSize, string? searchTerm)
     {
-        var animals = await animalRepository.GetAnimalsAsync();
+        var animals = await animalRepository.GetAnimalsAsync(pageNumber, pageSize, searchTerm);
         return animals.Select(a => a.ToDto());
     }
 
@@ -72,4 +72,8 @@ public class AnimalService(IAnimalRepository animalRepository, IAdoptAnimalServi
         await animalRepository.UpdateAnimalAsync(animalDto.ToEntity());
     }
 
+    public async Task<int> GetAnimalsCountAsync()
+    {
+        return await animalRepository.GetAnimalsCountAsync();
+    }
 }

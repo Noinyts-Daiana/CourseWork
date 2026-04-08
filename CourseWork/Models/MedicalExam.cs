@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CourseWork.Models;
 
 [Table("medical_exams")]
-public class MedicalExams
+public class MedicalExam
 {
     [Key]
     public int Id { get; set; }
@@ -18,7 +18,7 @@ public class MedicalExams
     public DateTime ExamDate { get; set; }
     
     [Required]
-    [Column("temperature", TypeName = "timestamp with time zone")]
+    [Column("temperature")]
     public decimal Temperature { get; set; }
     
     [Required]
@@ -27,5 +27,8 @@ public class MedicalExams
     
     [Column("notes")]
     public string? Notes { get; set; }
+    
+    [ForeignKey("AnimalId")]
+    public Animal? Animal { get; set; }
     
 }

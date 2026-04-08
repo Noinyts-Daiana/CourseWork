@@ -5,14 +5,24 @@ using Microsoft.AspNetCore.Mvc;
 namespace CourseWork.Controllers;
 
 [ApiController]
-[Route("api/[controller]")] 
+[Route("api/animals")] 
 public class AnimalController(IAnimalService animalService) : ControllerBase 
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AnimalDto>>> GetAllAnimals()
+    public async Task<ActionResult<IEnumerable<AnimalDto>>> GetAllAnimals(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 9,
+        [FromQuery] string? searchTerm = null
+        )
     {
-        var animals = await animalService.GetAllAnimalsAsync();
-        return Ok(animals); 
+        var animals = await animalService.GetAllAnimalsAsync(pageNumber, pageSize, searchTerm);
+        return Ok(new
+        {
+            items = animals,
+            totalCount = await animalService.GetAnimalsCountAsync(),
+            pageNumber = pageNumber,
+            pageSize = pageSize,
+        }); 
     }
 
     [HttpGet("{id}")]

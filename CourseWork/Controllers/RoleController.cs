@@ -17,14 +17,14 @@ public class RolesController : ControllerBase // Додано public
     [HttpGet]
     public IActionResult GetRoles()
     {
-        var roles = _context.Roles.ToList();
+        var roles = _context.Role.ToList();
         return Ok(roles);
     }
 
     [HttpGet("{id}")]
     public IActionResult GetRole(int id)
     {
-        var role = _context.Roles.Find(id);
+        var role = _context.Role.Find(id);
         return Ok(role);
     }
 }
