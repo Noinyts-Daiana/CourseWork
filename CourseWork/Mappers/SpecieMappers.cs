@@ -9,6 +9,7 @@ public static class SpecieMappers
     {
         return new SpeciesDto
         {
+            Id = specie.Id,
             Name = specie.Name,
             Slug = specie.Slug
         };

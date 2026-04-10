@@ -9,6 +9,7 @@ public static class BreedMappers
     {
         return new BreedsDto
         {
+            Id = breedModel.Id,
             Name = breedModel.Name,
             SpeciesId = breedModel.SpecieId
         };

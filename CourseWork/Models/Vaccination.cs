@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CourseWork.Models;
 
-[Table("Vaccinations")]
-public class Vaccinations
+[Table("vaccinations")]
+public class Vaccination
 {
     [Key]
     public int Id { get; set; }
@@ -25,5 +25,7 @@ public class Vaccinations
     [Column("next_due_date", TypeName = "timestamp with time zone")]
     public DateTime NextDueDate { get; set; }
     
+    [ForeignKey("AnimalId")]
+    public Animal? Animal { get; set; }
     
 }

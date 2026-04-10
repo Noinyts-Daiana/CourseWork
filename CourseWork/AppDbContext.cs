@@ -16,8 +16,8 @@ public class AppDbContext : DbContext
     public DbSet<Role> Role { get; set; }
     public DbSet<Characteristic> Characteristic { get; set; }
     public DbSet<AnimalCharacteristic> AnimalCharacteristic { get; set; }
-
     public DbSet<MedicalExam> MedicalExam { get; set; }
+    public DbSet<Vaccination> Vaccination { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

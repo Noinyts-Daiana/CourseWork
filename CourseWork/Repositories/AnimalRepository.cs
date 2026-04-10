@@ -20,7 +20,7 @@ public class AnimalRepository(AppDbContext context): IAnimalRepository
         return await context.Animal
             .Include(a => a.Specie)
             .Include(a => a.Breed)
-            .OrderBy(a => a.Name)
+            .OrderByDescending(a => a.Id)
             .Skip(skip)
             .Take(pageSize)
             .ToListAsync();

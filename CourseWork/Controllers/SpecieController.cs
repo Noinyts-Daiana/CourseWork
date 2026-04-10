@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CourseWork.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/species")]
 public class SpecieController(ISpecieService specieService): ControllerBase
 {
     [HttpGet]
