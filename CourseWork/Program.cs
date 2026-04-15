@@ -3,6 +3,7 @@ using CourseWork;
 using CourseWork.Repositories;
 using CourseWork.Repositories.Interfaces;
 using CourseWork.Services;
+using CourseWork.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -77,6 +78,8 @@ builder.Services.AddScoped<IAdoptAnimalRepository, AdoptAnimalRepository>();
 builder.Services.AddScoped<IAnimalCharacteristicRepository, AnimalCharacteristicRepository>();
 builder.Services.AddScoped<IMedicalExamRepository, MedicalExamRepository>();
 builder.Services.AddScoped<IVaccinationRepository, VaccinationRepository>();
+builder.Services.AddScoped<IFoodRepository, FoodRepository>();
+builder.Services.AddScoped<IFeedingLogRepository, FeedingLogRepository>();
 
 // 5. РЕЄСТРАЦІЯ СЕРВІСІВ
 builder.Services.AddScoped<IAnimalService, AnimalService>();
@@ -88,6 +91,8 @@ builder.Services.AddScoped<IAdoptAnimalService, AdoptAnimalService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IMedicalExamService, MedicalService>();
 builder.Services.AddScoped<IVaccinationService, VaccinationService>();
+builder.Services.AddScoped<IFoodTypeService, FoodTypeService>();
+builder.Services.AddScoped<IFeedingLogService, FeedingLogService>();
 
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();

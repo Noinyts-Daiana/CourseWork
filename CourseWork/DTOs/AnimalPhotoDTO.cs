@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Http; 
+﻿using Microsoft.AspNetCore.Http;
 
-namespace CourseWork.ViewModels;
+namespace CourseWork.DTOs;
 
-public class AnimalPhotoUploadViewModel
+public class AnimalPhotoDto
 {
-    public int AnimalId { get; set; } 
+    public int Id { get; set; }
+    public int AnimalId { get; set; }
     
-    public IFormFile Photo { get; set; } = null!; 
+    public IFormFile? File { get; set; } 
     
-    public bool IsMainPhoto { get; set; } = false; 
+    public string? FileUrl { get; set; } 
+    
+    public bool IsMain { get; set; }
 }

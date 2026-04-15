@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CourseWork.Models;
 
 [Table("food_types")]
-public class FoodTypes
+public class FoodType
 {
     [Key]
     public int Id { get; set; }

@@ -26,4 +26,7 @@ public class AnimalPhoto
     [Required]
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }
+    
+    [ForeignKey("AnimalId")]
+    public virtual Animal Animal { get; set; } = null!;
 }

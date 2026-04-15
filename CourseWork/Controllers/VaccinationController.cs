@@ -7,7 +7,7 @@ namespace CourseWork.Controllers;
 
 [ApiController]
 [Route("api/vacctinations")]
-public class Vaccination(IVaccinationService vaccinationService): ControllerBase
+public class VaccinationController(IVaccinationService vaccinationService): ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetVaccinationsAsync(

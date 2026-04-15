@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CourseWork.Models;
 
 [Table("fooding_logs")]
-public class FeedingLogs
+public class FeedingLog
 {
     [Key]
     public int Id { get; set; }
@@ -18,7 +18,7 @@ public class FeedingLogs
     [Column("food_type_id")]
     public int FoodTypeId { get; set; }
     
-    public FoodTypes? FoodType { get; set; }
+    public FoodType? FoodType { get; set; }
     
     [Required]
     [Column("fed_at")]
