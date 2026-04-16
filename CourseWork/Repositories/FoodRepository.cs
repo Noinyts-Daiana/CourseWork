@@ -11,17 +11,16 @@ public class FoodRepository(AppDbContext context) : IFoodRepository
     {
         var query = context.FoodType.AsQueryable();
 
-        // Розумний пошук: за назвою або брендом
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             var term = searchTerm.ToLower();
             query = query.Where(f => 
-                f.Name.ToLower().Contains(term) || 
-                f.Brand.ToLower().Contains(term));
+                EF.Functions.ILike(f.Name, $"%{term}%") || 
+                EF.Functions.ILike(f.Brand, $"%{term}%"));
         }
 
         return await query
-            .OrderBy(f => f.Id) // Сортуємо за назвою за замовчуванням
+            .OrderBy(f => f.Id) 
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -67,5 +66,38 @@ public class FoodRepository(AppDbContext context) : IFoodRepository
             context.FoodType.Remove(foodType);
             await context.SaveChangesAsync();
         }
+    }
+    public async Task<IEnumerable<string>> GetUniqueBrandsAsync(string? searchTerm, int pageNumber, int pageSize)
+    {
+        var query = context.FoodType
+            .Select(f => f.Brand)
+            .Distinct();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var term = searchTerm.ToLower();
+            query = query.Where(b => b != null && b.ToLower().Contains(term));
+        }
+
+        return await query
+            .OrderBy(b => b) 
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
+    public async Task<int> GetUniqueBrandsCountAsync(string? searchTerm)
+    {
+        var query = context.FoodType
+            .Select(f => f.Brand)
+            .Distinct();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var term = searchTerm.ToLower();
+            query = query.Where(b => b != null && b.ToLower().Contains(term));
+        }
+
+        return await query.CountAsync();
     }
 }

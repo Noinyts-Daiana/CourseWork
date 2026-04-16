@@ -26,7 +26,8 @@ public static class FoodTypeMappers
             MinThreshold = foodType.MinThreshold,
             Name = foodType.Name,
             Unit = foodType.Unit,
-            StockQuantity = foodType.StockQuantity
+            StockQuantity = foodType.StockQuantity,
+            IsLowStock = foodType.StockQuantity <= foodType.MinThreshold
         };
     }
 }

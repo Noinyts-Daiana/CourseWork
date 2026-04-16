@@ -72,4 +72,13 @@ public class FoodTypeService(IFoodRepository foodRepository): IFoodTypeService
         food.StockQuantity += amountChange;
         await foodRepository.UpdateAsync(food);
     }
+    public async Task<IEnumerable<string>> GetBrandsAsync(string? searchTerm, int pageNumber, int pageSize)
+    {
+        return await foodRepository.GetUniqueBrandsAsync(searchTerm, pageNumber, pageSize);
+    }
+
+    public async Task<int> GetBrandsCountAsync(string? searchTerm)
+    {
+        return await foodRepository.GetUniqueBrandsCountAsync(searchTerm);
+    }
 }

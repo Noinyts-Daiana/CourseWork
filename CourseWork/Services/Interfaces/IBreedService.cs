@@ -8,5 +8,6 @@ public interface IBreedService
     Task<BreedsDto?> GetBreedByIdAsync(int id);
     Task<bool> UpdateBreedAsync(int id, BreedsDto breedDto);
     Task<IEnumerable<BreedsDto>> GetBreedsByNameAsync(string name);
-    
+    Task<IEnumerable<string>> GetUniqueBreedNamesAsync(string? searchTerm, int pageNumber, int pageSize);
+    Task<int> GetUniqueBreedNamesCountAsync(string? searchTerm);
 }

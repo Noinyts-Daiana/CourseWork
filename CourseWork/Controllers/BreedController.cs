@@ -56,4 +56,21 @@ public class BreedController(IBreedService breedService) : ControllerBase
         return Ok(breeds);
     }
     
+    [HttpGet("unique-names")]
+    public async Task<IActionResult> GetUniqueNames(
+        [FromQuery] string? searchTerm = null,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        var names = await breedService.GetUniqueBreedNamesAsync(searchTerm, pageNumber, pageSize);
+        var totalCount = await breedService.GetUniqueBreedNamesCountAsync(searchTerm);
+
+        return Ok(new
+        {
+            items = names, 
+            totalCount,
+            pageNumber,
+            pageSize
+        });
+    }
 }

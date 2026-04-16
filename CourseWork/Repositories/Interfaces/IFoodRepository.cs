@@ -10,4 +10,6 @@ public interface IFoodRepository
     Task AddAsync(FoodType foodType);
     Task UpdateAsync(FoodType foodType);
     Task DeleteAsync(int id);
+    Task<IEnumerable<string>> GetUniqueBrandsAsync(string? searchTerm, int pageNumber, int pageSize);
+    Task<int> GetUniqueBrandsCountAsync(string? searchTerm);
 }

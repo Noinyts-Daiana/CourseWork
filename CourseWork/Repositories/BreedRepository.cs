@@ -41,4 +41,38 @@ public class BreedRepository(AppDbContext context) : IBreedRepository
         .Where(b => b.Name.Contains(name))
         .ToListAsync();
     }
+    
+    public async Task<IEnumerable<string>> GetUniqueBreedNamesAsync(string? searchTerm, int pageNumber, int pageSize)
+    {
+        var query = context.Breed
+            .Select(b => b.Name)
+            .Distinct();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var term = searchTerm.ToLower();
+            query = query.Where(name => name != null && name.ToLower().Contains(term));
+        }
+
+        return await query
+            .OrderBy(name => name)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
+    public async Task<int> GetUniqueBreedNamesCountAsync(string? searchTerm)
+    {
+        var query = context.Breed
+            .Select(b => b.Name)
+            .Distinct();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var term = searchTerm.ToLower();
+            query = query.Where(name => name != null && name.ToLower().Contains(term));
+        }
+
+        return await query.CountAsync();
+    }
 }

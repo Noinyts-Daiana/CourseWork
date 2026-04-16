@@ -94,4 +94,21 @@ public class FoodTypeController(IFoodTypeService foodTypeService) : ControllerBa
             return NotFound(new { message = ex.Message });
         }
     }
+    [HttpGet("brands")]
+    public async Task<IActionResult> GetBrands(
+        [FromQuery] string? searchTerm = null,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        var brands = await foodTypeService.GetBrandsAsync(searchTerm, pageNumber, pageSize);
+        var totalCount = await foodTypeService.GetBrandsCountAsync(searchTerm);
+
+        return Ok(new
+        {
+            items = brands, 
+            totalCount,
+            pageNumber,
+            pageSize
+        });
+    }
 }

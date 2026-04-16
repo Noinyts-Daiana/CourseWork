@@ -12,4 +12,7 @@ public interface IFoodTypeService
     Task UpdateAsync(int id, FoodTypeDto foodTypeDto);
     Task DeleteAsync(int id);
     Task AdjustStockAsync(int id, decimal amountChange);
+    Task<IEnumerable<string>> GetBrandsAsync(string? searchTerm, int pageNumber, int pageSize);
+    Task<int> GetBrandsCountAsync(string? searchTerm);
+    
 }

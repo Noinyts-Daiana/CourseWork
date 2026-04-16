@@ -62,4 +62,13 @@ public class BreedService(IBreedRepository breedRepository): IBreedService
        
        return breeds.Select(b => b.ToDto());
    }
+   public async Task<IEnumerable<string>> GetUniqueBreedNamesAsync(string? searchTerm, int pageNumber, int pageSize)
+   {
+       return await breedRepository.GetUniqueBreedNamesAsync(searchTerm, pageNumber, pageSize);
+   }
+
+   public async Task<int> GetUniqueBreedNamesCountAsync(string? searchTerm)
+   {
+       return await breedRepository.GetUniqueBreedNamesCountAsync(searchTerm);
+   }
 }

@@ -10,4 +10,5 @@ public class FoodTypeDto
     public decimal MinThreshold { get; set; }
     public decimal Amount { get; set; }
 
+    public bool IsLowStock { get; set; }
 }
