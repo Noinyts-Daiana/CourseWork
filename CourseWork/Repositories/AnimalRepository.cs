@@ -8,18 +8,19 @@ public class AnimalRepository(AppDbContext context): IAnimalRepository
 
     public async Task<IEnumerable<Animal>> GetAnimalsAsync(int pageNumber, int pageSize, string? searchTerm)
     {
-        var query = context.Animal.AsQueryable();
+        var query = context.Animal
+            .Include(a => a.Specie)
+            .Include(a => a.Breed)
+            .AsQueryable();
 
-        if (!string.IsNullOrEmpty(searchTerm))
+        if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            query = query.Where(a => a.Name.Contains(searchTerm));
-            return query;
+            var term = searchTerm.ToLower();
+            query = query.Where(a => a.Name.ToLower().Contains(term));
         }
         
         int skip = (pageNumber - 1) * pageSize;
-        return await context.Animal
-            .Include(a => a.Specie)
-            .Include(a => a.Breed)
+        return await query
             .OrderByDescending(a => a.Id)
             .Skip(skip)
             .Take(pageSize)

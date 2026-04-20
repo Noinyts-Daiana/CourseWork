@@ -32,7 +32,7 @@ public static class FeedingLogMappers
             Amount = dto.Amount,
             FedById = dto.FedById,
             
-            FedAt = dto.FedAt != default ? dto.FedAt : DateTime.UtcNow 
+            FedAt = dto.FedAt != default ? dto.FedAt.ToUniversalTime() : DateTime.UtcNow
         };
     }
 }

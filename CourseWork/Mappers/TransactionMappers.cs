@@ -17,7 +17,7 @@ public static class TransactionMappers
             TransactionDate = t.TransactionDate,
             UserId = t.UserId,
             CategoryName = t.Category?.Name,
-            InitiatorName = t.User?.FullName 
+            InitiatorName = t.User?.FullName, 
         };
     }
 
@@ -26,11 +26,13 @@ public static class TransactionMappers
         return new Transaction
         {
             Amount = dto.Amount,
-            CategoryId = dto.CategoryId,
             Description = dto.Description,
             IsIncome = dto.IsIncome,
-            TransactionDate = dto.TransactionDate != default ? dto.TransactionDate : DateTime.UtcNow,
-            UserId = dto.UserId
+            UserId = dto.UserId,
+            TransactionDate = (dto.TransactionDate == default || dto.TransactionDate == DateTime.MinValue) 
+                ? DateTime.UtcNow 
+                : dto.TransactionDate
+            
         };
     }
 

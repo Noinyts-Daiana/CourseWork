@@ -34,7 +34,8 @@ public static class AnimalMappers
             IsSterilized = animal.IsSterilized,
             Description = animal.Description,
             Height = animal.Height,
-            Sex = animal.Sex
+            Sex = animal.Sex,
+            BreedName = animal.Breed?.Name
         };
     }
 }

@@ -80,6 +80,8 @@ builder.Services.AddScoped<IMedicalExamRepository, MedicalExamRepository>();
 builder.Services.AddScoped<IVaccinationRepository, VaccinationRepository>();
 builder.Services.AddScoped<IFoodRepository, FoodRepository>();
 builder.Services.AddScoped<IFeedingLogRepository, FeedingLogRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IAnimalPhotoRepository, AnimalPhotoRepository>();
 
 // 5. РЕЄСТРАЦІЯ СЕРВІСІВ
 builder.Services.AddScoped<IAnimalService, AnimalService>();
@@ -93,6 +95,8 @@ builder.Services.AddScoped<IMedicalExamService, MedicalService>();
 builder.Services.AddScoped<IVaccinationService, VaccinationService>();
 builder.Services.AddScoped<IFoodTypeService, FoodTypeService>();
 builder.Services.AddScoped<IFeedingLogService, FeedingLogService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IAnimalPhotoService, AnimalPhotoService>();
 
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
