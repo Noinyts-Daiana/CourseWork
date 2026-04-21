@@ -6,6 +6,7 @@ using CourseWork.Services;
 using CourseWork.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -68,6 +69,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ActiveOnly", policy => policy.Requirements.Add(new ActiveUserRequirement()));
+});
+
+builder.Services.AddScoped<IAuthorizationHandler, ActiveUserHandler>();
 // 4. РЕЄСТРАЦІЯ РЕПОЗИТОРІЇВ
 builder.Services.AddScoped<IAnimalRepository, AnimalRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();

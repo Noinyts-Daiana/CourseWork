@@ -14,7 +14,7 @@ public class AdoptAnimalController(IAdoptAnimalService adoptAnimalService) : Con
         var animals = await adoptAnimalService.GetAvailableAnimalsAsync();
         return Ok(animals); 
     }
-
+    
     [HttpGet("user/{ownerId}")]
     public async Task<ActionResult<IEnumerable<AdoptAnimalDto>>> GetUserAdoptions(int ownerId)
     {
@@ -22,35 +22,25 @@ public class AdoptAnimalController(IAdoptAnimalService adoptAnimalService) : Con
         return Ok(adoptions);
     }
 
-    [HttpPost("{animalId}/arrival")]
-    public async Task<ActionResult<AdoptAnimalDto>> RegisterArrival(int animalId, [FromQuery] DateTime? date = null)
+    [HttpPost("adopt")]
+    public async Task<IActionResult> Adopt([FromBody] AdoptAnimalDto request)
     {
-        try
-        {
-            var result = await adoptAnimalService.RegisterArrivalAsync(animalId, date);
+        try {
+            var result = await adoptAnimalService.AdoptAnimalAsync(request.AnimalId, request.OwnerId.Value);
             return Ok(result);
-        }
-        catch (ArgumentException ex)
-        {
-            return NotFound(new { message = ex.Message }); 
+        } catch (Exception ex) {
+            return BadRequest(new { message = ex.Message });
         }
     }
 
-    [HttpPost("{animalId}/adopt")]
-    public async Task<ActionResult<AdoptAnimalDto>> AdoptAnimal(int animalId, [FromQuery] int ownerId, [FromQuery] DateTime? date = null)
+    [HttpPost("return")]
+    public async Task<IActionResult> ReturnAnimal([FromBody] AdoptAnimalDto request)
     {
-        try
-        {
-            var result = await adoptAnimalService.AdoptAnimalAsync(animalId, ownerId, date);
+        try {
+            var result = await adoptAnimalService.RegisterArrivalAsync(request.AnimalId, request.OwnerId);
             return Ok(result);
-        }
-        catch (ArgumentException ex)
-        {
-            return NotFound(new { message = ex.Message }); 
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message }); 
+        } catch (Exception ex) {
+            return BadRequest(new { message = ex.Message });
         }
     }
 }

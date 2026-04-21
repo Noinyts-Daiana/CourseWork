@@ -13,6 +13,7 @@ public static class AdoptAnimalMappers
             OwnerId = adoptAnimalDto.OwnerId,
             ArrivalDate = adoptAnimalDto.ArrivalDate ?? DateTime.UtcNow,
             AdoptDate = adoptAnimalDto.AdoptDate,
+            Status = (AdoptionStatus)adoptAnimalDto.Status
         };
     }
 
@@ -24,6 +25,9 @@ public static class AdoptAnimalMappers
             OwnerId = adoptAnimal.OwnerId,
             ArrivalDate = adoptAnimal.ArrivalDate,
             AdoptDate = adoptAnimal.AdoptDate,
+            AnimalName = adoptAnimal.Animal?.Name ?? "Тваринка",
+            Status = (int)adoptAnimal.Status,
+            AnimalBreed = adoptAnimal.Animal?.Breed?.Name ?? "Метис", 
         };
     }
 }

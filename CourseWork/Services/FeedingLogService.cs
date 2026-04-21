@@ -39,4 +39,33 @@ public class FeedingLogService(
         
         return logs.Select(log => log.ToDto());
     }
+    public async Task<FeedingLogDto> UpdateFeedingLogAsync(int id, FeedingLogDto dto)
+    {
+        var log = await logRepository.GetByIdAsync(id);
+        
+        if (log == null)
+            throw new KeyNotFoundException("Запис годування не знайдено.");
+
+        log.AnimalId = dto.AnimalId;
+        log.FoodTypeId = dto.FoodTypeId;
+        log.Amount = dto.Amount;
+        log.FedById = dto.FedById;
+        
+        if (dto.FedAt != default)
+            log.FedAt = dto.FedAt.Kind == DateTimeKind.Utc ? dto.FedAt : dto.FedAt.ToUniversalTime();
+
+        await logRepository.UpdateAsync(log);
+
+        return log.ToDto();
+    }
+
+    public async Task<bool> DeleteFeedingLogAsync(int id)
+    {
+        var log = await logRepository.GetByIdAsync(id);
+        
+        if (log == null) return false;
+
+        await logRepository.DeleteAsync(log);
+        return true;
+    }
 }

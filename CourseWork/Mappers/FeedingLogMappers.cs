@@ -11,6 +11,7 @@ public static class FeedingLogMappers
         {
             Id = log.Id,
             AnimalId = log.AnimalId,
+            AnimalName = log.Animal?.Name,
             FoodTypeId = log.FoodTypeId,
             Amount = log.Amount,
             FedById = log.FedById,

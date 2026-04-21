@@ -12,4 +12,6 @@ public class AdoptAnimalDto
     
     public DateTime? ArrivalDate { get; set; }
     public DateTime? AdoptDate { get; set; }
+    public int Status { get; set; }
+    public string? AnimalBreed { get; set; } 
 }

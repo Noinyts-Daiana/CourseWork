@@ -21,13 +21,16 @@ public class UsersController(
    public async Task<IActionResult> GetUsers(
       [FromQuery] int pageNumber = 1, 
       [FromQuery] int pageSize = 9,
-      [FromQuery] string? searchTerm = null)
+      [FromQuery] string? searchTerm = null,
+      [FromQuery] int? roleId = null) 
    {
-      var users = await userService.GetUsers(pageNumber, pageSize, searchTerm);
-     
+      var users = await userService.GetUsers(pageNumber, pageSize, searchTerm, roleId);
+   
+      var totalCount = await userService.GetTotalUsersCountAsync(searchTerm, roleId);
+  
       return Ok(new {
          items = users,
-         totalCount = await userService.GetTotalUsersCountAsync(),
+         totalCount = totalCount,
          pageNumber = pageNumber,
          pageSize = pageSize
       });
@@ -115,6 +118,31 @@ public class UsersController(
       var user = await userService.AddUser(userDto);
       return Ok(user);
    }
+   
+   [HttpPatch("{id}/toggle-status")]
+   public async Task<IActionResult> ToggleStatus(int id)
+   {
+      var success = await userService.ToggleUserStatusAsync(id);
+    
+      if (!success) return NotFound();
+      
+      var user = await userService.GetUserById(id); 
+
+      return Ok(new { 
+         isActive = user.IsActive, 
+         message = "Статус користувача змінено" 
+      });
+   }
+   /*var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+if (user == null || !VerifyPassword(dto.Password, user.Password)) 
+    return Unauthorized("Невірний логін або пароль");
+
+// ОСЬ ТУТ:
+if (!user.IsActive) 
+    return BadRequest(new { message = "Ваш акаунт деактивовано. Зверніться до адміністратора." });
+
+var token = _tokenService.GenerateJwtToken(user.Id, user.Role.Name);*/
 }
 
 

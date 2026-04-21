@@ -21,25 +21,27 @@ public class UserRepository(AppDbContext context): IUserRepository
 
     }
 
-    public async Task<IEnumerable<User>> GetUsersAsync(int pageNumber, int pageSize, string? searchTerm = null)
+    public async Task<IEnumerable<User>> GetUsersAsync(int pageNumber, int pageSize, string? searchTerm = null, int? roleId = null)
     {
-        var query = context.User.AsQueryable();
+        var query = context.User.Include(u => u.Role).AsQueryable();
+
+        if (roleId.HasValue && roleId > 0)
+        {
+            query = query.Where(u => u.RoleId == roleId);
+        }
+
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            var term = searchTerm.ToLower(); 
-
-            query = query.Include(u => u.Role).Where(u => 
+            var term = searchTerm.ToLower();
+            query = query.Where(u => 
                 u.FullName.ToLower().Contains(term) || 
-                u.Email.ToLower().Contains(term)
-                    
-            );
-
-            return query;
+                u.Email.ToLower().Contains(term));
         }
-        
+
         int skip = (pageNumber - 1) * pageSize;
-        return await context.User.Include(u => u.Role)
-            .OrderBy(a => a.Id) 
+
+        return await query
+            .OrderByDescending(u => u.Id) 
             .Skip(skip)
             .Take(pageSize)
             .ToListAsync();
@@ -111,8 +113,19 @@ public class UserRepository(AppDbContext context): IUserRepository
             .ToListAsync();
     }
 
-    public async Task<int> GetTotalUsersCountAsync()
+    public async Task<int> GetTotalUsersCountAsync(string? searchTerm = null, int? roleId = null)
     {
-        return await context.User.CountAsync(); 
+        var query = context.User.AsQueryable();
+
+        if (roleId.HasValue && roleId > 0)
+            query = query.Where(u => u.RoleId == roleId);
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var term = searchTerm.ToLower();
+            query = query.Where(u => u.FullName.ToLower().Contains(term) || u.Email.ToLower().Contains(term));
+        }
+
+        return await query.CountAsync();
     }
 }

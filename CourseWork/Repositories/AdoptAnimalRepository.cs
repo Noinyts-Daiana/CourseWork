@@ -47,18 +47,30 @@ public class AdoptAnimalRepository(AppDbContext context): IAdoptAnimalRepository
 
     public async Task<IEnumerable<AdoptAnimal>> GetAvailableAnimalsAsync()
     {
-        return await context.AdoptAnimal
+        var allHistory = await context.AdoptAnimal
             .Include(a => a.Animal)
-            .Where(aa => aa.OwnerId == null)
+            .ThenInclude(an => an.Breed)
             .ToListAsync();
+
+        var available = allHistory
+            .GroupBy(aa => aa.AnimalId)
+            .Select(g => g.OrderByDescending(x => x.Id).First())
+            .Where(aa => aa.Status == AdoptionStatus.Returned || aa.OwnerId == null) 
+            .ToList();
+
+        return available;
     }
 
     public async Task<IEnumerable<AdoptAnimal>> GetByUserIdAsync(int ownerId)
     {
-        var usersAnimal = await context.AdoptAnimal
+        var history = await context.AdoptAnimal
             .Include(aa => aa.Animal)
             .Where(aa => aa.OwnerId == ownerId)
             .ToListAsync();
-        return usersAnimal;
+
+        return history
+            .GroupBy(aa => aa.AnimalId)
+            .Select(g => g.OrderByDescending(x => x.Id).First()) 
+            .ToList();
     }
 }

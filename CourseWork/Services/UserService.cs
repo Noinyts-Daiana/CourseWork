@@ -7,15 +7,38 @@ namespace CourseWork.Services;
 
 public class UserService(IUserRepository userRepository): IUserService
 {
-    public async Task<IEnumerable<UserDto>> GetUsers(int pageNumber, int pageSize, string? searchTerm)
+    public async Task<IEnumerable<UserDto>> GetUsers(int pageNumber, int pageSize, string? searchTerm = null, int? roleId = null)
     {
-        var users = await userRepository.GetUsersAsync( pageNumber, pageSize, searchTerm);
+        var users = await userRepository.GetUsersAsync(pageNumber, pageSize, searchTerm, roleId);
 
-        var usersDto = users.Select(u => u.ToDto());
-        
-        return usersDto;
+        return users.Select(u => new UserDto
+        {
+            UserId = u.Id,
+            FullName = u.FullName,
+            Email = u.Email,
+            RoleId = u.RoleId,
+            RoleName = u.Role?.Name ?? "Немає ролі",
+            IsActive = u.IsActive
+        });
     }
 
+    public async Task<int> GetTotalUsersCountAsync(string? searchTerm = null, int? roleId = null)
+    {
+        return await userRepository.GetTotalUsersCountAsync(searchTerm, roleId);
+    }
+
+    public async Task<bool> ToggleUserStatusAsync(int id)
+    {
+        var user = await userRepository.GetUserByIdAsync(id);
+        if (user == null) return false;
+
+        user.IsActive = !user.IsActive;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await userRepository.UpdateUserAsync(id, user);
+        return true;
+    }
+    
     public async Task<UserDto?> GetUserById(int userId)
     {
         var user = await userRepository.GetUserByIdAsync(userId);

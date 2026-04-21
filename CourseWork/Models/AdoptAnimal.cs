@@ -3,6 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CourseWork.Models;
 
+public enum AdoptionStatus
+{
+    Adopted = 0,    
+    Returned = 1,  
+    Fostered = 2    
+}
+
 [Table("adopt_animals")]
 public class AdoptAnimal
 {
@@ -23,5 +30,6 @@ public class AdoptAnimal
     [Column("adopt_at", TypeName = "timestamp with time zone")]
     public DateTime? AdoptDate { get; set; }
     
-    
+    [Column("status")]
+    public AdoptionStatus Status { get; set; }
 }

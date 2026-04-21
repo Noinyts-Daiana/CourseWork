@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 namespace CourseWork.Models;
 
-[Table("fooding_logs")]
+[Table("feeding_logs")]
 public class FeedingLog
 {
     [Key]
