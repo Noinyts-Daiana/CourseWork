@@ -9,5 +9,6 @@ public interface ISpecieRepository
     Task AddSpecieAsync(Specie specie);
     Task UpdateSpecieAsync(Specie specie);
     Task DeleteSpecieAsync(int id);
-    
+    Task<(IEnumerable<Specie> Items, int TotalCount)> GetPagedSpeciesAsync(string? searchTerm, int pageNumber, int pageSize);
+
 }

@@ -4,7 +4,7 @@ namespace CourseWork.Services;
 
 public interface IUserService
 {
-    Task<IEnumerable<UserDto>> GetUsers(int pageNumber, int pageSize, string? searchTerm = null, int? roleId = null);
+    Task<IEnumerable<UserDto>> GetUsers(int pageNumber, int pageSize, string? searchTerm = null, int? roleId = null,  bool? isActive = null);
     Task<int> GetTotalUsersCountAsync(string? searchTerm = null, int? roleId = null);
     Task<bool> ToggleUserStatusAsync(int id);
     Task<UserDto?> GetUserById(int userId);

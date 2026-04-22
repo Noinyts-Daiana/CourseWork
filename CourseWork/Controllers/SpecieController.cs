@@ -15,6 +15,16 @@ public class SpecieController(ISpecieService specieService): ControllerBase
         
         return Ok(species);
     }
+    [HttpGet("paged")]
+    public async Task<IActionResult> GetPagedSpecies(
+        [FromQuery] string? searchTerm = null,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        var (items, totalCount) = await specieService.GetPagedSpeciesAsync(searchTerm, pageNumber, pageSize);
+
+        return Ok(new { items, totalCount, pageNumber, pageSize });
+    }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetSpecies(int id)

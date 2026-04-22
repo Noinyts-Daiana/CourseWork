@@ -21,13 +21,17 @@ public class UserRepository(AppDbContext context): IUserRepository
 
     }
 
-    public async Task<IEnumerable<User>> GetUsersAsync(int pageNumber, int pageSize, string? searchTerm = null, int? roleId = null)
+    public async Task<IEnumerable<User>> GetUsersAsync(int pageNumber, int pageSize, string? searchTerm = null, int? roleId = null, bool? isActive = null)
     {
         var query = context.User.Include(u => u.Role).AsQueryable();
 
         if (roleId.HasValue && roleId > 0)
         {
             query = query.Where(u => u.RoleId == roleId);
+        }
+        if (isActive.HasValue)
+        {
+            query = query.Where(u => u.IsActive == isActive.Value);
         }
 
         if (!string.IsNullOrWhiteSpace(searchTerm))

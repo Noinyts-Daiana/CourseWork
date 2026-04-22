@@ -6,7 +6,12 @@ using CourseWork.Repositories;
 
 namespace CourseWork.Services;
 
-public class AnimalService(IAnimalRepository animalRepository, IAdoptAnimalService adoptionService): IAnimalService
+public class AnimalService(
+    IAnimalRepository animalRepository, 
+    IAdoptAnimalService adoptionService,
+    ISpecieRepository speciesRepository,
+    IBreedRepository breedRepository      
+) : IAnimalService
 {
     public async Task<IEnumerable<AnimalDto>> GetAllAnimalsAsync(int pageNumber, int pageSize, string? searchTerm)
     {
@@ -31,13 +36,36 @@ public class AnimalService(IAnimalRepository animalRepository, IAdoptAnimalServi
     {
         await animalRepository.DeleteAnimalAsync(animalId);
     }
+
     public async Task<AnimalDto> AddAnimalAsync(AnimalDto animalDto)
     {
+        if (animalDto.SpeciesId == null && !string.IsNullOrWhiteSpace(animalDto.SpeciesName))
+        {
+            var newSpecies = new Specie { Name = animalDto.SpeciesName };
+            
+            await speciesRepository.AddSpecieAsync(newSpecies); 
+            
+            animalDto.SpeciesId = newSpecies.Id; 
+        }
+
+        if (animalDto.BreedId == null && !string.IsNullOrWhiteSpace(animalDto.BreedName))
+        {
+            var newBreed = new Breed 
+            { 
+                Name = animalDto.BreedName,
+                SpecieId = animalDto.SpeciesId!.Value 
+            };
+            
+            await breedRepository.AddAsync(newBreed); 
+            
+            animalDto.BreedId = newBreed.Id;
+        }
+
         var animal = new Animal() 
         {
             Name = animalDto.Name,
-            SpeciesId = animalDto.SpeciesId, 
-            BreedId = animalDto.BreedId,
+            SpeciesId = animalDto.SpeciesId ?? 0, 
+            BreedId = animalDto.BreedId ?? 0,
             Birthday = animalDto.Birthday,
             Sex = animalDto.Sex,
             Weight = animalDto.Weight,
@@ -69,7 +97,28 @@ public class AnimalService(IAnimalRepository animalRepository, IAdoptAnimalServi
 
     public async Task UpdateAnimalAsync(AnimalDto animalDto)
     {
-        await animalRepository.UpdateAnimalAsync(animalDto.ToEntity());
+        if (animalDto.SpeciesId == null && !string.IsNullOrWhiteSpace(animalDto.SpeciesName))
+        {
+            var newSpecies = new Specie { Name = animalDto.SpeciesName };
+            await speciesRepository.AddSpecieAsync(newSpecies);
+            animalDto.SpeciesId = newSpecies.Id;
+        }
+        if (animalDto.BreedId == null && !string.IsNullOrWhiteSpace(animalDto.BreedName))
+        {
+            var newBreed = new Breed 
+            { 
+                Name = animalDto.BreedName,
+                SpecieId = animalDto.SpeciesId!.Value 
+            };
+            await breedRepository.AddAsync(newBreed);
+            animalDto.BreedId = newBreed.Id;
+        }
+
+        var animalToUpdate = animalDto.ToEntity();
+        
+        animalToUpdate.Id = animalDto.Id;
+
+        await animalRepository.UpdateAnimalAsync(animalToUpdate);
     }
 
     public async Task<int> GetAnimalsCountAsync()

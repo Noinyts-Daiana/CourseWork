@@ -123,6 +123,8 @@ app.UseHttpsRedirection();
 
 app.UseCors("ShelterSysPolicy"); 
 
+app.UseStaticFiles();
+
 app.UseAuthentication(); 
 app.UseAuthorization();
 

@@ -18,7 +18,13 @@ public class BreedController(IBreedService breedService) : ControllerBase
         return Ok(breeds);
     }
 
-
+    [HttpGet("by-species/{speciesId}")]
+    public async Task<IActionResult> GetBreedsBySpecies(int speciesId)
+    {
+        var breeds = await breedService.GetBreedsBySpeciesIdAsync(speciesId);
+        return Ok(breeds);
+    }
+    
     [HttpGet("{breedId}")]
     public async Task<IActionResult> GetBreedById(int breedId)
     {

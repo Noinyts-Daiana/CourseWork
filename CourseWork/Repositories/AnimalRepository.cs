@@ -5,28 +5,29 @@ namespace CourseWork.Repositories;
 
 public class AnimalRepository(AppDbContext context): IAnimalRepository
 {
-
     public async Task<IEnumerable<Animal>> GetAnimalsAsync(int pageNumber, int pageSize, string? searchTerm)
     {
         var query = context.Animal
             .Include(a => a.Specie)
             .Include(a => a.Breed)
+            .Include(a => a.Photos)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             var term = searchTerm.ToLower();
-            query = query.Where(a => a.Name.ToLower().Contains(term));
+            query = query.Where(a => a.Name.ToLower().Contains(term) || 
+                                     a.Breed.Name.ToLower().Contains(term));
         }
-        
+    
         int skip = (pageNumber - 1) * pageSize;
+    
         return await query
             .OrderByDescending(a => a.Id)
             .Skip(skip)
             .Take(pageSize)
             .ToListAsync();
     }
-
     public async Task<Animal?> GetAnimalByIdAsync(int id)
     {
         return await context.Animal

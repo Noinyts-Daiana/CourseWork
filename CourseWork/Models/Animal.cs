@@ -26,9 +26,8 @@ public class Animal
     [Column("breed_id")]
     public int BreedId { get; set; }
     
-    [Required]
     [Column("birth_date", TypeName = "date")]
-    public DateTime Birthday { get; set; }
+    public DateTime? Birthday { get; set; }
     
     [Required]
     [Column("sex")]
@@ -58,4 +57,5 @@ public class Animal
     public Breed? Breed { get; set; }
     
     public ICollection<AnimalCharacteristic> AnimalCharacteristics { get; set; } = new List<AnimalCharacteristic>();
+    public virtual ICollection<AnimalPhoto> Photos { get; set; } = new List<AnimalPhoto>();
 }

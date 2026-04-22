@@ -13,4 +13,5 @@ public interface IBreedRepository
     Task<IEnumerable<Breed>> GetBreedsByNameAsync(string name);
     Task<IEnumerable<string>> GetUniqueBreedNamesAsync(string? searchTerm, int pageNumber, int pageSize);
     Task<int> GetUniqueBreedNamesCountAsync(string? searchTerm);
+    Task<IEnumerable<Breed>> GetBreedsBySpeciesIdAsync(int speciesId);
 }

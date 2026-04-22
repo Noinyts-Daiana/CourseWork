@@ -75,4 +75,12 @@ public class BreedRepository(AppDbContext context) : IBreedRepository
 
         return await query.CountAsync();
     }
+    
+    public async Task<IEnumerable<Breed>> GetBreedsBySpeciesIdAsync(int speciesId)
+    {
+        return await context.Breed
+            .Where(b => b.SpecieId == speciesId) 
+            .OrderBy(b => b.Name)
+            .ToListAsync();
+    }
 }

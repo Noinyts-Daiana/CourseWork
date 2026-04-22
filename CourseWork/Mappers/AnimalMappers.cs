@@ -11,8 +11,8 @@ public static class AnimalMappers
         {
             Name = animalDto.Name,
             Birthday = animalDto.Birthday,
-            BreedId = animalDto.BreedId,
-            SpeciesId = animalDto.SpeciesId,
+            BreedId = animalDto.BreedId??0,
+            SpeciesId = animalDto.SpeciesId??0,
             Sex = animalDto.Sex,
             Height = animalDto.Height,
             Weight = animalDto.Weight,
@@ -35,7 +35,12 @@ public static class AnimalMappers
             Description = animal.Description,
             Height = animal.Height,
             Sex = animal.Sex,
-            BreedName = animal.Breed?.Name
+            BreedName = animal.Breed?.Name,
+            Photos = animal.Photos.Select(p => new AnimalPhotoDto {
+            Id = p.Id,
+            FileUrl = p.FilePath,
+            IsMain = p.IsMain
+        }).ToList()
         };
     }
 }

@@ -9,4 +9,5 @@ public interface ISpecieService
     Task AddSpecieAsync(SpeciesDto specie);
     Task<bool> UpdateSpecieAsync(int id, SpeciesDto specie);
     Task DeleteSpecieAsync(int id);
+    Task<(IEnumerable<SpeciesDto> Items, int TotalCount)> GetPagedSpeciesAsync(string? searchTerm, int pageNumber, int pageSize);
 }

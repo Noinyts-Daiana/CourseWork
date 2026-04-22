@@ -43,4 +43,11 @@ public class SpecieService(ISpecieRepository specieRepository) : ISpecieService
     
         return true; 
     }
+    
+    public async Task<(IEnumerable<SpeciesDto> Items, int TotalCount)> GetPagedSpeciesAsync(string? searchTerm, int pageNumber, int pageSize)
+    {
+        var (items, totalCount) = await specieRepository.GetPagedSpeciesAsync(searchTerm, pageNumber, pageSize);
+
+        return (items.Select(s => s.ToDto()), totalCount);
+    }
 }

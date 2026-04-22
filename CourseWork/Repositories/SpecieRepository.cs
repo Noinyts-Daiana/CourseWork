@@ -27,6 +27,26 @@ public class SpecieRepository(AppDbContext context): ISpecieRepository
         await context.SaveChangesAsync();
     }
 
+    public async Task<(IEnumerable<Specie> Items, int TotalCount)> GetPagedSpeciesAsync(string? searchTerm, int pageNumber, int pageSize)
+    {
+        var query = context.Specie.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(s => s.Name.Contains(searchTerm));
+        }
+
+        int totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderBy(s => s.Name) 
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
+    
     public async Task DeleteSpecieAsync(int id)
     {
         var specie = await GetSpecieAsync(id);

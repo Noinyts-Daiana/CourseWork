@@ -11,7 +11,7 @@ public class AnimalController(IAnimalService animalService) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<AnimalDto>>> GetAllAnimals(
         [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 9,
+        [FromQuery] int pageSize = 8,
         [FromQuery] string? searchTerm = null
         )
     {

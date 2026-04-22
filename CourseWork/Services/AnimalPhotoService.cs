@@ -16,7 +16,10 @@ public class AnimalPhotoService(
         if (dto.File == null || dto.File.Length == 0)
             throw new ArgumentException("Файл не вибрано");
 
-        var uploadsFolder = Path.Combine(environment.WebRootPath, "images", "animals");
+        var rootPath = environment.WebRootPath ?? Path.Combine(environment.ContentRootPath, "wwwroot");
+
+        var uploadsFolder = Path.Combine(rootPath, "images", "animals");
+
         if (!Directory.Exists(uploadsFolder))
             Directory.CreateDirectory(uploadsFolder);
 
@@ -36,7 +39,7 @@ public class AnimalPhotoService(
         var photo = new AnimalPhoto
         {
             AnimalId = dto.AnimalId,
-            FilePath = $"/images/animals/{uniqueFileName}", 
+            FilePath = $"/images/animals/{uniqueFileName}",
             IsMain = dto.IsMain,
             CreatedAt = DateTime.UtcNow
         };

@@ -22,9 +22,10 @@ public class UsersController(
       [FromQuery] int pageNumber = 1, 
       [FromQuery] int pageSize = 9,
       [FromQuery] string? searchTerm = null,
-      [FromQuery] int? roleId = null) 
+      [FromQuery] int? roleId = null,
+      [FromQuery] bool? isActive = null) 
    {
-      var users = await userService.GetUsers(pageNumber, pageSize, searchTerm, roleId);
+      var users = await userService.GetUsers(pageNumber, pageSize, searchTerm, roleId, isActive);
    
       var totalCount = await userService.GetTotalUsersCountAsync(searchTerm, roleId);
   
