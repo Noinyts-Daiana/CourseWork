@@ -9,22 +9,28 @@ namespace CourseWork.Controllers;
 public class AnimalController(IAnimalService animalService) : ControllerBase 
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AnimalDto>>> GetAllAnimals(
+    public async Task<ActionResult> GetAllAnimals(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 8,
-        [FromQuery] string? searchTerm = null
-        )
+        [FromQuery] string? searchTerm = null,
+        [FromQuery] List<int>? charIds = null,
+        [FromQuery] int? speciesId = null,
+        [FromQuery] int? breedId = null,
+        [FromQuery] int? sex = null)
     {
-        var animals = await animalService.GetAllAnimalsAsync(pageNumber, pageSize, searchTerm);
+        var animals = await animalService.GetAllAnimalsAsync(
+            pageNumber, pageSize, searchTerm, charIds, speciesId, breedId, sex);
+
+        var totalFilteredCount = await animalService.GetAnimalsCountAsync(searchTerm, charIds, speciesId, breedId, sex);
+
         return Ok(new
         {
             items = animals,
-            totalCount = await animalService.GetAnimalsCountAsync(),
+            totalCount = totalFilteredCount,
             pageNumber = pageNumber,
             pageSize = pageSize,
         }); 
     }
-
     [HttpGet("{id}")]
     public async Task<ActionResult<AnimalDto>> GetAnimalById(int id)
     {

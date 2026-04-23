@@ -30,12 +30,21 @@ public static class AnimalMappers
             Birthday = animal.Birthday,
             BreedId = animal.BreedId,
             SpeciesId = animal.SpeciesId,
+            SpeciesName = animal.Specie?.Name,
             Weight = animal.Weight,
             IsSterilized = animal.IsSterilized,
             Description = animal.Description,
             Height = animal.Height,
             Sex = animal.Sex,
             BreedName = animal.Breed?.Name,
+            CharacteristicIds = animal.AnimalCharacteristics?
+                .Select(ac => ac.CharacteristicId)
+                .ToList() ?? new List<int>(),
+
+            Characteristics = animal.AnimalCharacteristics?
+                .Where(ac => ac.Characteristic != null)
+                .Select(ac => ac.Characteristic!.Name)
+                .ToList() ?? new List<string>(),
             Photos = animal.Photos.Select(p => new AnimalPhotoDto {
             Id = p.Id,
             FileUrl = p.FilePath,

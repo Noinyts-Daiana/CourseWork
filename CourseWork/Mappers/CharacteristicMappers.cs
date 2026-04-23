@@ -17,6 +17,7 @@ public static class CharacteristicMappers
     {
         return new CharacteristicDto()
         {
+            Id = characteristic.Id,
             Name = characteristic.Name
         };
     }

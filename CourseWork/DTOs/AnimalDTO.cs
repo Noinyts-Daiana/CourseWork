@@ -11,6 +11,7 @@ public class AnimalDto
     public string? SpeciesName { get; set; } 
     public string? BreedName { get; set; }
     public List<string>? Characteristics { get; set; } 
+    public List<string>? NewCharacteristicNames { get; set; }
 
     public DateTime? Birthday { get; set; } 
     public Sex Sex { get; set; }   
