@@ -1,5 +1,7 @@
-﻿using CourseWork.DTOs;
+﻿using System.Security.Claims;
+using CourseWork.DTOs;
 using CourseWork.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -11,20 +13,38 @@ namespace CourseWork.Controllers;
 public class FeedingLogController(IFeedingLogService feedingLogService) : ControllerBase
 {
     [HttpPost]
+    [Authorize] 
     public async Task<IActionResult> FeedAnimal([FromBody] FeedingLogDto dto)
     {
         try
         {
+            if (dto.FedById == null || dto.FedById == 0) 
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                                  ?? User.FindFirst("id")?.Value
+                                  ?? User.FindFirst("userId")?.Value;
+
+                if (int.TryParse(userIdClaim, out int tokenUserId))
+                {
+                    dto.FedById = tokenUserId; 
+                }
+                else
+                {
+                    return Unauthorized(new
+                        { message = "Не вдалося ідентифікувати користувача. Будь ласка, авторизуйтесь." });
+                }
+            }
+
             await feedingLogService.AddFeedingLogAsync(dto);
             return Ok(new { message = "Тварину успішно нагодовано!" });
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { message = ex.Message }); 
+            return BadRequest(new { message = ex.Message });
         }
         catch (KeyNotFoundException ex)
         {
-            return NotFound(new { message = ex.Message }); 
+            return NotFound(new { message = ex.Message });
         }
     }
 
@@ -41,6 +61,7 @@ public class FeedingLogController(IFeedingLogService feedingLogService) : Contro
         var logs = await feedingLogService.GetRecentLogsAsync(count);
         return Ok(logs);
     }
+
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateFeedingLog(int id, [FromBody] FeedingLogDto dto)
     {
@@ -49,7 +70,7 @@ public class FeedingLogController(IFeedingLogService feedingLogService) : Contro
             var updatedLog = await feedingLogService.UpdateFeedingLogAsync(id, dto);
             return Ok(updatedLog);
         }
-        catch (KeyNotFoundException ex) 
+        catch (KeyNotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
         }
@@ -59,9 +80,10 @@ public class FeedingLogController(IFeedingLogService feedingLogService) : Contro
         }
         catch (Exception ex)
         {
-            return BadRequest(new { 
-                message = "Помилка при оновленні запису.", 
-                details = ex.Message 
+            return BadRequest(new
+            {
+                message = "Помилка при оновленні запису.",
+                details = ex.Message
             });
         }
     }
@@ -72,8 +94,8 @@ public class FeedingLogController(IFeedingLogService feedingLogService) : Contro
         try
         {
             var isDeleted = await feedingLogService.DeleteFeedingLogAsync(id);
-            
-            if (!isDeleted) 
+
+            if (!isDeleted)
                 return NotFound(new { message = "Запис годування не знайдено." });
 
             return Ok(new { message = "Запис успішно видалено." });

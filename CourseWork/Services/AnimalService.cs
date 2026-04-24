@@ -13,9 +13,9 @@ public class AnimalService(
     ICharacteristicRepository characteristicRepository 
 ) : IAnimalService
 {
-    public async Task<IEnumerable<AnimalDto>> GetAllAnimalsAsync(int pageNumber, int pageSize, string? searchTerm, List<int>? charIds, int? speciesId, int? breedId, int? sex)
+    public async Task<IEnumerable<AnimalDto>> GetAllAnimalsAsync(int pageNumber, int pageSize, string? searchTerm, List<int>? charIds, int? speciesId, int? breedId, int? sex, bool? isAdopted)
     {
-        var animals = await animalRepository.GetAnimalsAsync(pageNumber, pageSize, searchTerm, charIds, speciesId, breedId, sex);
+        var animals = await animalRepository.GetAnimalsAsync(pageNumber, pageSize, searchTerm, charIds, speciesId, breedId, sex, isAdopted);
         return animals.Select(a => a.ToDto());
     }
 
@@ -159,8 +159,8 @@ public class AnimalService(
         await animalRepository.UpdateAnimalAsync(existingAnimal);
     }
 
-    public async Task<int> GetAnimalsCountAsync(string? searchTerm, List<int>? charIds, int? speciesId, int? breedId, int? sex)
+    public async Task<int> GetAnimalsCountAsync(string? searchTerm, List<int>? charIds, int? speciesId, int? breedId, int? sex, bool? isAdopted)
     {
-        return await animalRepository.GetAnimalsCountAsync(searchTerm, charIds, speciesId, breedId, sex);
+        return await animalRepository.GetAnimalsCountAsync(searchTerm, charIds, speciesId, breedId, sex, isAdopted);
     }
 }

@@ -58,5 +58,6 @@ public class Animal
     
     public ICollection<AnimalCharacteristic> AnimalCharacteristics { get; set; } = new List<AnimalCharacteristic>();
     public virtual ICollection<AnimalPhoto> Photos { get; set; } = new List<AnimalPhoto>();
+    public ICollection<AdoptAnimal> AdoptAnimals { get; set; } = new List<AdoptAnimal>();
   
 }

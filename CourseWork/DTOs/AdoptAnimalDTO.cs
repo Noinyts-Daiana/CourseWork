@@ -1,4 +1,6 @@
-﻿namespace CourseWork.DTOs;
+﻿using CourseWork.Models;
+
+namespace CourseWork.DTOs;
 
 public class AdoptAnimalDto
 {
@@ -14,4 +16,5 @@ public class AdoptAnimalDto
     public DateTime? AdoptDate { get; set; }
     public int Status { get; set; }
     public string? AnimalBreed { get; set; } 
+    public virtual User Owner { get; set; }
 }

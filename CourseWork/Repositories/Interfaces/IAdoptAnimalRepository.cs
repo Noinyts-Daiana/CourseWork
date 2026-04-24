@@ -12,4 +12,5 @@ public interface IAdoptAnimalRepository
     Task<bool> DeleteAdoptAnimal(int id);
     Task<IEnumerable<AdoptAnimal>> GetAvailableAnimalsAsync();
     Task<IEnumerable<AdoptAnimal>> GetByUserIdAsync(int ownerId);
+    Task<bool> IsAnimalAlreadyAdoptedAsync(int animalId);
 }

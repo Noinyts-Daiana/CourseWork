@@ -16,12 +16,14 @@ public class AnimalController(IAnimalService animalService) : ControllerBase
         [FromQuery] List<int>? charIds = null,
         [FromQuery] int? speciesId = null,
         [FromQuery] int? breedId = null,
-        [FromQuery] int? sex = null)
+        [FromQuery] int? sex = null,
+        [FromQuery] bool? isAdopted = null)
     {
         var animals = await animalService.GetAllAnimalsAsync(
-            pageNumber, pageSize, searchTerm, charIds, speciesId, breedId, sex);
+            pageNumber, pageSize, searchTerm, charIds, speciesId, breedId, sex, isAdopted);
 
-        var totalFilteredCount = await animalService.GetAnimalsCountAsync(searchTerm, charIds, speciesId, breedId, sex);
+        var totalFilteredCount = await animalService.GetAnimalsCountAsync(
+            searchTerm, charIds, speciesId, breedId, sex, isAdopted);
 
         return Ok(new
         {
@@ -38,7 +40,7 @@ public class AnimalController(IAnimalService animalService) : ControllerBase
         
         if (animal == null)
         {
-            return NotFound(new { message = $"Тварину з ID {id} не знайдено." }); // Повертає 404
+            return NotFound(new { message = $"Тварину з ID {id} не знайдено." }); 
         }
         
         return Ok(animal);

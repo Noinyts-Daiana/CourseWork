@@ -38,24 +38,29 @@ public class AdoptAnimalService(IAdoptAnimalRepository adoptAnimalRepository, IA
     public async Task<AdoptAnimalDto> AdoptAnimalAsync(int animalId, int ownerId, DateTime? date = null)
     {
         var animal = await animalRepository.GetAnimalByIdAsync(animalId);
-        if (animal != null)
-        {
-            //TODO вставити перевірку на ownerId
-            var adoptRecord = await adoptAnimalRepository.GetByIdAsync(animalId);
-            if (adoptRecord == null)
-            {
-                throw new InvalidOperationException("Ця тварина зараз не в притулку, або вже має власника.");
-            }
+        if (animal == null) 
+            throw new KeyNotFoundException($"Тварину з ID {animalId} не знайдено.");
 
-            adoptRecord.OwnerId = ownerId;
-            adoptRecord.AdoptDate = date ?? DateTime.UtcNow;
-            await adoptAnimalRepository.UpdateAdoptAnimal(adoptRecord);
-            return adoptRecord.ToDto();
-        }
-        else
+        var currentRecord = await adoptAnimalRepository.GetByIdAsync(animalId); 
+        
+        if (currentRecord != null)
         {
-            throw new ArgumentException($"Тварину з ID {animalId} не знайдено.");
+            if (currentRecord.OwnerId != null || currentRecord.Status == AdoptionStatus.Adopted) 
+            {
+                throw new InvalidOperationException("Ця тваринка вже знайшла свій дім!");
+            }
         }
+
+        var adoptRecord = new AdoptAnimal
+        {
+            AnimalId = animalId,
+            OwnerId = ownerId,
+            AdoptDate = date ?? DateTime.UtcNow,
+            Status = AdoptionStatus.Adopted 
+        };
+
+        await adoptAnimalRepository.CreateAdoptAnimal(adoptRecord); 
+        return adoptRecord.ToDto();
     }
 
     public async Task<IEnumerable<AdoptAnimalDto>> GetAvailableAnimalsAsync()
@@ -89,7 +94,7 @@ public class AdoptAnimalService(IAdoptAnimalRepository adoptAnimalRepository, IA
             AnimalId = animalId,
             OwnerId = ownerId,
             ArrivalDate = DateTime.UtcNow,
-            Status = AdoptionStatus.Returned // Одиниця!
+            Status = AdoptionStatus.Returned 
         };
 
         await adoptAnimalRepository.CreateAdoptAnimal(record);
@@ -99,14 +104,19 @@ public class AdoptAnimalService(IAdoptAnimalRepository adoptAnimalRepository, IA
     
     public async Task<AdoptAnimalDto> AdoptAnimalAsync(int animalId, int ownerId)
     {
-        // TODO: перевірку через userRepository.IsActive
+        var isAlreadyAdopted = await adoptAnimalRepository.IsAnimalAlreadyAdoptedAsync(animalId);
+    
+        if (isAlreadyAdopted)
+        {
+            throw new InvalidOperationException("Ця тваринка вже має люблячу родину і не може бути приручена знову!");
+        }
 
         var record = new AdoptAnimal
         {
             AnimalId = animalId,
             OwnerId = ownerId,
             AdoptDate = DateTime.UtcNow,
-            Status = AdoptionStatus.Adopted // 0
+            Status = AdoptionStatus.Adopted 
         };
 
         await adoptAnimalRepository.CreateAdoptAnimal(record); 

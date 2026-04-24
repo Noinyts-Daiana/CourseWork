@@ -45,6 +45,11 @@ public static class AnimalMappers
                 .Where(ac => ac.Characteristic != null)
                 .Select(ac => ac.Characteristic!.Name)
                 .ToList() ?? new List<string>(),
+            IsAdopted = animal.AdoptAnimals != null && 
+                        animal.AdoptAnimals.Any() && 
+                        animal.AdoptAnimals
+                            .OrderByDescending(a => a.AdoptDate ?? a.ArrivalDate)
+                            .FirstOrDefault()!.Status == AdoptionStatus.Adopted, 
             Photos = animal.Photos.Select(p => new AnimalPhotoDto {
             Id = p.Id,
             FileUrl = p.FilePath,

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CourseWork.Controllers;
 
 [ApiController]
-[Route("api/[controller]")] 
+[Route("api/adopt-animal")] 
 public class AdoptAnimalController(IAdoptAnimalService adoptAnimalService) : ControllerBase
 {
     [HttpGet("available")]

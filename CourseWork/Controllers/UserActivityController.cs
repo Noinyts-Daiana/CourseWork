@@ -22,12 +22,15 @@ public class UserActivityController(AppDbContext context) : ControllerBase
                     User = "Система"
                 }).ToListAsync();
 
-            var adoptions = await context.AdoptAnimal
-                .Select(a => new {
+            var adoptions = await (from a in context.AdoptAnimal
+                join u in context.User on a.OwnerId equals u.Id into userGroup
+                from u in userGroup.DefaultIfEmpty()
+                select new {
                     Date = a.AdoptDate,
-                    Description = $"Тварина #{a.AnimalId} знайшла нову родину",
+                    Description = $"{a.Animal.Name} знайшла нову родину",
                     Type = "AnimalAdoption",
-                    User = "Адміністратор"
+                           
+                    User = u != null ? u.FullName : "Невідомий власник"
                 }).ToListAsync();
             
             var userRegistrations = await context.User 

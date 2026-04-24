@@ -20,4 +20,5 @@ public class AnimalDto
     public bool IsSterilized { get; set; }
     public string? Description { get; set; }
     public List<AnimalPhotoDto> Photos { get; set; } = new();
+    public bool IsAdopted { get; set; }
 }
