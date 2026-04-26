@@ -2,14 +2,17 @@
 using System.Text;
 using System.Xml.Linq;
 using CourseWork.Models;
+using CourseWork.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseWork.Controllers;
+
 [ApiController]
 [Route("api/reports")]
 [Authorize]
+[RequirePermission("GenerateReports")]
 public class ReportController(AppDbContext context) : ControllerBase
 {
     [HttpGet("full")]
@@ -19,12 +22,12 @@ public class ReportController(AppDbContext context) : ControllerBase
 
         return format.ToLower() switch
         {
-            "csv"  => File(Encoding.UTF8.GetBytes(ToCsv(report)),  "text/csv",              $"shelter_export_{DateTime.UtcNow:yyyyMMdd}.csv"),
-            "xml"  => File(Encoding.UTF8.GetBytes(ToXml(report)),  "application/xml",       $"shelter_export_{DateTime.UtcNow:yyyyMMdd}.xml"),
-            _      => File(Encoding.UTF8.GetBytes(ToJson(report)),  "application/json",      $"shelter_export_{DateTime.UtcNow:yyyyMMdd}.json")
+            "csv" => File(Encoding.UTF8.GetBytes(ToCsv(report)), "text/csv", $"shelter_export_{DateTime.UtcNow:yyyyMMdd}.csv"),
+            "xml" => File(Encoding.UTF8.GetBytes(ToXml(report)), "application/xml", $"shelter_export_{DateTime.UtcNow:yyyyMMdd}.xml"),
+            _ => File(Encoding.UTF8.GetBytes(ToJson(report)), "application/json", $"shelter_export_{DateTime.UtcNow:yyyyMMdd}.json")
         };
     }
-    
+
     [HttpGet("animals")]
     public async Task<IActionResult> AnimalsReport([FromQuery] string format = "json")
     {
@@ -67,9 +70,9 @@ public class ReportController(AppDbContext context) : ControllerBase
 
     [HttpGet("finance")]
     public async Task<IActionResult> FinanceReport(
-        [FromQuery] string  format   = "json",
+        [FromQuery] string format = "json",
         [FromQuery] DateTime? fromDate = null,
-        [FromQuery] DateTime? toDate   = null)
+        [FromQuery] DateTime? toDate = null)
     {
         var query = context.Transaction.Include(t => t.Category).Include(t => t.User).AsQueryable();
 
@@ -80,30 +83,29 @@ public class ReportController(AppDbContext context) : ControllerBase
 
         var rows = transactions.Select(t => new Dictionary<string, string>
         {
-            ["id"]               = t.Id.ToString(),
-            ["date"]             = t.TransactionDate.ToString("dd.MM.yyyy HH:mm"),
-            ["type"]             = t.IsIncome ? "Дохід" : "Витрата",
-            ["amount_uah"]       = t.Amount.ToString(CultureInfo.InvariantCulture),
-            ["category"]         = t.Category?.Name ?? "",
-            ["description"]      = t.Description ?? "",
-            ["created_by"]       = t.User?.FullName ?? ""
+            ["id"]          = t.Id.ToString(),
+            ["date"]        = t.TransactionDate.ToString("dd.MM.yyyy HH:mm"),
+            ["type"]        = t.IsIncome ? "Дохід" : "Витрата",
+            ["amount_uah"]  = t.Amount.ToString(CultureInfo.InvariantCulture),
+            ["category"]    = t.Category?.Name ?? "",
+            ["description"] = t.Description ?? "",
+            ["created_by"]  = t.User?.FullName ?? ""
         }).ToList();
 
-        var total_income   = transactions.Where(t =>  t.IsIncome).Sum(t => t.Amount);
-        var total_expense  = transactions.Where(t => !t.IsIncome).Sum(t => t.Amount);
+        var totalIncome  = transactions.Where(t =>  t.IsIncome).Sum(t => t.Amount);
+        var totalExpense = transactions.Where(t => !t.IsIncome).Sum(t => t.Amount);
 
-        // Додаємо підсумковий рядок
         rows.Add(new Dictionary<string, string>
         {
             ["id"] = "ПІДСУМОК", ["date"] = "", ["type"] = "",
-            ["amount_uah"] = $"Доходи: {total_income} / Витрати: {total_expense} / Баланс: {total_income - total_expense}",
+            ["amount_uah"] = $"Доходи: {totalIncome} / Витрати: {totalExpense} / Баланс: {totalIncome - totalExpense}",
             ["category"] = "", ["description"] = "", ["created_by"] = ""
         });
 
         var headers = new[] { "id","date","type","amount_uah","category","description","created_by" };
         return FormatResponse(rows, headers, "finance", format, "finance_report");
     }
-    
+
     [HttpGet("medical")]
     public async Task<IActionResult> MedicalReport([FromQuery] string format = "json")
     {
@@ -119,28 +121,28 @@ public class ReportController(AppDbContext context) : ControllerBase
 
         var vacRows = vaccinations.Select(v => new Dictionary<string, string>
         {
-            ["record_type"]    = "Вакцинація",
-            ["animal_name"]    = v.Animal?.Name ?? "",
-            ["vaccine_name"]   = v.VaccineName ?? "",
-            ["date_given"]     = v.DateAdministered.ToString("dd.MM.yyyy"),
-            ["next_due_date"]  = v.NextDueDate.ToString("dd.MM.yyyy"),
-            ["is_overdue"]     = v.NextDueDate < DateTime.UtcNow ? "Так" : "Ні",
-            ["exam_temp"]      = "",
-            ["exam_weight"]    = "",
-            ["notes"]          = ""
+            ["record_type"]   = "Вакцинація",
+            ["animal_name"]   = v.Animal?.Name ?? "",
+            ["vaccine_name"]  = v.VaccineName ?? "",
+            ["date_given"]    = v.DateAdministered.ToString("dd.MM.yyyy"),
+            ["next_due_date"] = v.NextDueDate.ToString("dd.MM.yyyy"),
+            ["is_overdue"]    = v.NextDueDate < DateTime.UtcNow ? "Так" : "Ні",
+            ["exam_temp"]     = "",
+            ["exam_weight"]   = "",
+            ["notes"]         = ""
         });
 
         var examRows = exams.Select(e => new Dictionary<string, string>
         {
-            ["record_type"]    = "Медогляд",
-            ["animal_name"]    = e.Animal?.Name ?? "",
-            ["vaccine_name"]   = "",
-            ["date_given"]     = e.ExamDate.ToString("dd.MM.yyyy"),
-            ["next_due_date"]  = "",
-            ["is_overdue"]     = "",
-            ["exam_temp"]      = e.Temperature.ToString(CultureInfo.InvariantCulture),
-            ["exam_weight"]    = e.Weight.ToString(CultureInfo.InvariantCulture),
-            ["notes"]          = e.Notes ?? ""
+            ["record_type"]   = "Медогляд",
+            ["animal_name"]   = e.Animal?.Name ?? "",
+            ["vaccine_name"]  = "",
+            ["date_given"]    = e.ExamDate.ToString("dd.MM.yyyy"),
+            ["next_due_date"] = "",
+            ["is_overdue"]    = "",
+            ["exam_temp"]     = e.Temperature.ToString(CultureInfo.InvariantCulture),
+            ["exam_weight"]   = e.Weight.ToString(CultureInfo.InvariantCulture),
+            ["notes"]         = e.Notes ?? ""
         });
 
         var rows = vacRows.Concat(examRows).ToList();
@@ -168,6 +170,7 @@ public class ReportController(AppDbContext context) : ControllerBase
         return FormatResponse(rows, headers, "inventory", format, "inventory_report");
     }
 
+    // ─── helpers ────────────────────────────────────────────────────────────
 
     private IActionResult FormatResponse(
         List<Dictionary<string, string>> rows,
@@ -198,32 +201,21 @@ public class ReportController(AppDbContext context) : ControllerBase
 
     private async Task<object> BuildFullReport()
     {
-        var animals = await context.Animal.Include(a => a.Specie).Include(a => a.Breed)
-            .Include(a => a.AdoptAnimals).ToListAsync();
-        var vaccinations    = await context.Vaccination.Include(v => v.Animal).ToListAsync();
-        var exams           = await context.MedicalExam.Include(e => e.Animal).ToListAsync();
-        var transactions    = await context.Transaction.Include(t => t.Category).ToListAsync();
-        var foods           = await context.FoodType.ToListAsync();
-        var users           = await context.User.Include(u => u.Role).ToListAsync();
-        var alerts          = await context.SystemAlerts.OrderByDescending(a => a.CreatedAt).Take(50).ToListAsync();
+        var animals      = await context.Animal.Include(a => a.Specie).Include(a => a.Breed).Include(a => a.AdoptAnimals).ToListAsync();
+        var vaccinations = await context.Vaccination.Include(v => v.Animal).ToListAsync();
+        var exams        = await context.MedicalExam.Include(e => e.Animal).ToListAsync();
+        var transactions = await context.Transaction.Include(t => t.Category).ToListAsync();
+        var foods        = await context.FoodType.ToListAsync();
+        var users        = await context.User.Include(u => u.Role).ToListAsync();
+        var alerts       = await context.SystemAlerts.OrderByDescending(a => a.CreatedAt).Take(50).ToListAsync();
 
         return new
         {
             meta = new
             {
-                exportedAt    = DateTime.UtcNow,
-                exportedBy    = "ShelterSystem",
-                formatVersion = "1.0",
-                schema = new
-                {
-                    animals      = "id, name, species, breed, sex, birthday, weight, height, sterilized, status",
-                    vaccinations = "id, animal, vaccine, dateGiven, nextDue, isOverdue",
-                    exams        = "id, animal, date, temperature, weight, notes",
-                    transactions = "id, date, type, amount, category, description",
-                    inventory    = "id, name, brand, unit, stock, minThreshold, isLowStock",
-                    users        = "id, fullName, email, role, isActive, createdAt",
-                    alerts       = "id, type, severity, message, isAuto, isDone, createdAt"
-                }
+                exportedAt = DateTime.UtcNow,
+                exportedBy = "ShelterSystem",
+                formatVersion = "1.0"
             },
             summary = new
             {
@@ -241,53 +233,37 @@ public class ReportController(AppDbContext context) : ControllerBase
                 return new
                 {
                     a.Id, a.Name,
-                    species     = a.Specie?.Name,
-                    breed       = a.Breed?.Name,
-                    sex         = a.Sex.ToString(),
-                    birthday    = a.Birthday?.ToString("yyyy-MM-dd"),
+                    species = a.Specie?.Name, breed = a.Breed?.Name,
+                    sex = a.Sex.ToString(), birthday = a.Birthday?.ToString("yyyy-MM-dd"),
                     a.Weight, a.Height, a.IsSterilized,
-                    status      = last?.Status.ToString(),
-                    arrivalDate = last?.ArrivalDate,
-                    adoptDate   = last?.AdoptDate
+                    status = last?.Status.ToString(), arrivalDate = last?.ArrivalDate, adoptDate = last?.AdoptDate
                 };
             }),
             vaccinations = vaccinations.Select(v => new
             {
-                v.Id,
-                animal      = v.Animal?.Name,
-                v.VaccineName,
-                dateGiven   = v.DateAdministered,
-                nextDue     = v.NextDueDate,
-                isOverdue   = v.NextDueDate < DateTime.UtcNow
+                v.Id, animal = v.Animal?.Name, v.VaccineName,
+                dateGiven = v.DateAdministered, nextDue = v.NextDueDate,
+                isOverdue = v.NextDueDate < DateTime.UtcNow
             }),
             medicalExams = exams.Select(e => new
             {
-                e.Id,
-                animal  = e.Animal?.Name,
-                e.ExamDate, e.Temperature, e.Weight, e.Notes
+                e.Id, animal = e.Animal?.Name, e.ExamDate, e.Temperature, e.Weight, e.Notes
             }),
             transactions = transactions.Select(t => new
             {
-                t.Id,
-                date        = t.TransactionDate,
-                type        = t.IsIncome ? "income" : "expense",
-                t.Amount,
-                category    = t.Category?.Name,
-                t.Description
+                t.Id, date = t.TransactionDate,
+                type = t.IsIncome ? "income" : "expense",
+                t.Amount, category = t.Category?.Name, t.Description
             }),
             inventory = foods.Select(f => new
             {
                 f.Id, f.Name, f.Brand, f.Unit,
-                stock        = f.StockQuantity,
-                minThreshold = f.MinThreshold,
-                isLowStock   = f.StockQuantity <= f.MinThreshold
+                stock = f.StockQuantity, minThreshold = f.MinThreshold,
+                isLowStock = f.StockQuantity <= f.MinThreshold
             }),
             users = users.Select(u => new
             {
-                u.Id, u.FullName, u.Email,
-                role      = u.Role?.Name,
-                u.IsActive,
-                createdAt = u.CreatedAt
+                u.Id, u.FullName, u.Email, role = u.Role?.Name, u.IsActive, createdAt = u.CreatedAt
             }),
             systemAlerts = alerts.Select(a => new
             {
@@ -296,24 +272,20 @@ public class ReportController(AppDbContext context) : ControllerBase
         };
     }
 
-    private static string ToJson(object data)
-    {
-        return System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions
+    private static string ToJson(object data) =>
+        System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions
         {
             WriteIndented = true,
             PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
         });
-    }
 
-    private static string ToCsv(object report)
-    {
-        return "Full export is best used in JSON or XML format. Use /api/reports/animals?format=csv for flat CSV.";
-    }
+    private static string ToCsv(object report) =>
+        "Full export is best used in JSON or XML format. Use /api/reports/animals?format=csv for flat CSV.";
 
     private static string ToXml(object report)
     {
-        var json   = ToJson(report);
-        var doc    = new XDocument(new XElement("ShelterReport",
+        var json = ToJson(report);
+        var doc = new XDocument(new XElement("ShelterReport",
             new XAttribute("exportedAt", DateTime.UtcNow.ToString("o")),
             new XElement("RawJson", new XCData(json))));
         return doc.ToString();
@@ -329,7 +301,6 @@ public class ReportController(AppDbContext context) : ControllerBase
             var values = headers.Select(h =>
             {
                 var val = row.GetValueOrDefault(h, "");
-                // Екранування для CSV
                 if (val.Contains(';') || val.Contains('"') || val.Contains('\n'))
                     val = $"\"{val.Replace("\"", "\"\"")}\"";
                 return val;
@@ -349,9 +320,7 @@ public class ReportController(AppDbContext context) : ControllerBase
                 new XAttribute("exportedAt", DateTime.UtcNow.ToString("o")),
                 new XAttribute("totalRows", rows.Count),
                 rows.Select(row =>
-                    new XElement("Row",
-                        row.Select(kv => new XElement(kv.Key, kv.Value))
-                    )
+                    new XElement("Row", row.Select(kv => new XElement(kv.Key, kv.Value)))
                 )
             )
         );

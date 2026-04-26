@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using CourseWork.DTOs;
 using CourseWork.Services.Interfaces;
+using CourseWork.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,29 +11,25 @@ namespace CourseWork.Controllers;
 
 [ApiController]
 [Route("api/feeding-log")]
+[Authorize]
 public class FeedingLogController(IFeedingLogService feedingLogService) : ControllerBase
 {
     [HttpPost]
-    [Authorize] 
+    [RequirePermission("FeedAnimal")]
     public async Task<IActionResult> FeedAnimal([FromBody] FeedingLogDto dto)
     {
         try
         {
-            if (dto.FedById == null || dto.FedById == 0) 
+            if (dto.FedById == null || dto.FedById == 0)
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                                   ?? User.FindFirst("id")?.Value
                                   ?? User.FindFirst("userId")?.Value;
 
                 if (int.TryParse(userIdClaim, out int tokenUserId))
-                {
-                    dto.FedById = tokenUserId; 
-                }
+                    dto.FedById = tokenUserId;
                 else
-                {
-                    return Unauthorized(new
-                        { message = "Не вдалося ідентифікувати користувача. Будь ласка, авторизуйтесь." });
-                }
+                    return Unauthorized(new { message = "Не вдалося ідентифікувати користувача. Будь ласка, авторизуйтесь." });
             }
 
             await feedingLogService.AddFeedingLogAsync(dto);
@@ -49,6 +46,7 @@ public class FeedingLogController(IFeedingLogService feedingLogService) : Contro
     }
 
     [HttpGet("animal/{animalId}")]
+    [RequirePermission("ViewAnimals")]
     public async Task<IActionResult> GetAnimalLogs(int animalId)
     {
         var logs = await feedingLogService.GetLogsByAnimalAsync(animalId);
@@ -56,6 +54,7 @@ public class FeedingLogController(IFeedingLogService feedingLogService) : Contro
     }
 
     [HttpGet("recent")]
+    [RequirePermission("ViewAnimals")]
     public async Task<IActionResult> GetRecentLogs([FromQuery] int count = 50)
     {
         var logs = await feedingLogService.GetRecentLogsAsync(count);
@@ -63,6 +62,7 @@ public class FeedingLogController(IFeedingLogService feedingLogService) : Contro
     }
 
     [HttpPut("{id}")]
+    [RequirePermission("FeedAnimal")]
     public async Task<IActionResult> UpdateFeedingLog(int id, [FromBody] FeedingLogDto dto)
     {
         try
@@ -80,15 +80,12 @@ public class FeedingLogController(IFeedingLogService feedingLogService) : Contro
         }
         catch (Exception ex)
         {
-            return BadRequest(new
-            {
-                message = "Помилка при оновленні запису.",
-                details = ex.Message
-            });
+            return BadRequest(new { message = "Помилка при оновленні запису.", details = ex.Message });
         }
     }
 
     [HttpDelete("{id}")]
+    [RequirePermission("FeedAnimal")]
     public async Task<IActionResult> DeleteFeedingLog(int id)
     {
         try

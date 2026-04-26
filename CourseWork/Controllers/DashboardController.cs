@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using CourseWork.Models;
+using CourseWork.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace CourseWork.Controllers;
 public class DashboardController(AppDbContext context) : ControllerBase
 {
     [HttpGet("stats")]
+    [RequirePermission("ViewDashboard")]
     public async Task<IActionResult> GetStats()
     {
         var now = DateTime.UtcNow;
@@ -30,16 +32,16 @@ public class DashboardController(AppDbContext context) : ControllerBase
             .Select(x => x.AnimalId)
             .ToListAsync();
 
-        var totalAdopted   = adoptedAnimalIds.Count;
+        var totalAdopted = adoptedAnimalIds.Count;
         var animalsInShelter = totalAnimals - totalAdopted;
 
         var transactions = await context.Transaction.ToListAsync();
 
-        var fundBalance        = transactions.Sum(t => t.IsIncome ? t.Amount : -t.Amount);
-        var incomeThisMonth    = transactions
+        var fundBalance = transactions.Sum(t => t.IsIncome ? t.Amount : -t.Amount);
+        var incomeThisMonth = transactions
             .Where(t => t.IsIncome && t.TransactionDate >= startOfMonth)
             .Sum(t => t.Amount);
-        var expensesThisMonth  = transactions
+        var expensesThisMonth = transactions
             .Where(t => !t.IsIncome && t.TransactionDate >= startOfMonth)
             .Sum(t => t.Amount);
 
@@ -47,26 +49,26 @@ public class DashboardController(AppDbContext context) : ControllerBase
 
         var upcomingVaccinations = vaccinations
             .Count(v => v.NextDueDate >= now && v.NextDueDate <= now.AddDays(7));
-        var overdueVaccinations  = vaccinations
+        var overdueVaccinations = vaccinations
             .Count(v => v.NextDueDate < now);
 
         var lowStockCount = await context.FoodType
             .CountAsync(f => f.StockQuantity <= f.MinThreshold);
 
-        var totalUsers  = await context.User.CountAsync();
+        var totalUsers = await context.User.CountAsync();
         var activeUsers = await context.User.CountAsync(u => u.IsActive);
 
         return Ok(new
         {
             animals = new
             {
-                total        = totalAnimals,
-                inShelter    = animalsInShelter,
-                adopted      = totalAdopted
+                total = totalAnimals,
+                inShelter = animalsInShelter,
+                adopted = totalAdopted
             },
             finance = new
             {
-                balance           = fundBalance,
+                balance = fundBalance,
                 incomeThisMonth,
                 expensesThisMonth
             },
@@ -81,13 +83,14 @@ public class DashboardController(AppDbContext context) : ControllerBase
             },
             users = new
             {
-                total  = totalUsers,
+                total = totalUsers,
                 active = activeUsers
             }
         });
     }
 
     [HttpGet("alerts")]
+    [RequirePermission("ViewDashboard")]
     public async Task<IActionResult> GetAlerts()
     {
         var now = DateTime.UtcNow;
@@ -105,17 +108,17 @@ public class DashboardController(AppDbContext context) : ControllerBase
             var daysOverdue = (int)(now - v.NextDueDate).TotalDays;
             autoAlerts.Add(new
             {
-                id              = (int?)null,
-                type            = "vaccination",
-                severity        = "danger",
-                message         = $"Прострочена вакцинація у {v.Animal?.Name ?? "Невідома тварина"}: {v.VaccineName} ({daysOverdue} дн. тому)",
+                id = (int?)null,
+                type = "vaccination",
+                severity = "danger",
+                message = $"Прострочена вакцинація у {v.Animal?.Name ?? "Невідома тварина"}: {v.VaccineName} ({daysOverdue} дн. тому)",
                 relatedEntityId = v.AnimalId,
-                createdAt       = v.NextDueDate,
-                isDone          = false,
-                isAuto          = true
+                createdAt = v.NextDueDate,
+                isDone = false,
+                isAuto = true
             });
         }
-        
+
         var upcomingVaccinations = await context.Vaccination
             .Include(v => v.Animal)
             .Where(v => v.NextDueDate >= now && v.NextDueDate <= now.AddDays(7))
@@ -128,14 +131,14 @@ public class DashboardController(AppDbContext context) : ControllerBase
             var daysLeft = (int)(v.NextDueDate - now).TotalDays;
             autoAlerts.Add(new
             {
-                id              = (int?)null,
-                type            = "vaccination",
-                severity        = "info",
-                message         = $"Планова вакцинація через {daysLeft} дн: {v.Animal?.Name} — {v.VaccineName}",
+                id = (int?)null,
+                type = "vaccination",
+                severity = "info",
+                message = $"Планова вакцинація через {daysLeft} дн: {v.Animal?.Name} — {v.VaccineName}",
                 relatedEntityId = v.AnimalId,
-                createdAt       = now,
-                isDone          = false,
-                isAuto          = true
+                createdAt = now,
+                isDone = false,
+                isAuto = true
             });
         }
 
@@ -147,14 +150,14 @@ public class DashboardController(AppDbContext context) : ControllerBase
         {
             autoAlerts.Add(new
             {
-                id              = (int?)null,
-                type            = "inventory",
-                severity        = "warning",
-                message         = $"Низький запас: {f.Name} ({f.Brand}) — залишок: {f.StockQuantity} {f.Unit}",
+                id = (int?)null,
+                type = "inventory",
+                severity = "warning",
+                message = $"Низький запас: {f.Name} ({f.Brand}) — залишок: {f.StockQuantity} {f.Unit}",
                 relatedEntityId = f.Id,
-                createdAt       = now,
-                isDone          = false,
-                isAuto          = true
+                createdAt = now,
+                isDone = false,
+                isAuto = true
             });
         }
 
@@ -162,7 +165,7 @@ public class DashboardController(AppDbContext context) : ControllerBase
             .GroupBy(aa => aa.AnimalId)
             .Select(g => new
             {
-                AnimalId   = g.Key,
+                AnimalId = g.Key,
                 LastStatus = g.OrderByDescending(x => x.AdoptDate ?? x.ArrivalDate).First().Status
             })
             .Where(x => x.LastStatus == AdoptionStatus.Adopted)
@@ -189,9 +192,9 @@ public class DashboardController(AppDbContext context) : ControllerBase
         foreach (var a in unfedAnimals)
         {
             var lastFeeding = recentFeedings.FirstOrDefault(f => f.AnimalId == a.Id);
-            var hoursAgo    = lastFeeding != null
+            var hoursAgo = lastFeeding != null
                 ? (int)(now - lastFeeding.LastFedAt).TotalHours
-                : -1; // ніколи не годована
+                : -1;
 
             var message = hoursAgo < 0
                 ? $"Тварина ніколи не отримувала запис годування: {a.Name}"
@@ -199,17 +202,17 @@ public class DashboardController(AppDbContext context) : ControllerBase
 
             autoAlerts.Add(new
             {
-                id              = (int?)null,
-                type            = "feeding",
-                severity        = "warning",
+                id = (int?)null,
+                type = "feeding",
+                severity = "warning",
                 message,
                 relatedEntityId = a.Id,
-                createdAt       = now,
-                isDone          = false,
-                isAuto          = true
+                createdAt = now,
+                isDone = false,
+                isAuto = true
             });
         }
-        
+
         List<object> manualAlerts = new();
         try
         {
@@ -221,29 +224,28 @@ public class DashboardController(AppDbContext context) : ControllerBase
 
             manualAlerts = dbAlerts.Select(a => (object)new
             {
-                id              = (int?)a.Id,
-                type            = a.Type ?? "info",
-                severity        = "info",
-                message         = a.Message ?? "",
+                id = (int?)a.Id,
+                type = a.Type ?? "info",
+                severity = "info",
+                message = a.Message ?? "",
                 relatedEntityId = (int?)null,
-                createdAt       = DateTime.UtcNow,
-                isDone          = a.IsDone,
-                isAuto          = false
+                createdAt = DateTime.UtcNow,
+                isDone = a.IsDone,
+                isAuto = false
             }).ToList();
         }
-        catch
-        {
-        }
+        catch { }
 
         return Ok(new
         {
-            auto   = autoAlerts,
+            auto = autoAlerts,
             manual = manualAlerts,
-            total  = autoAlerts.Count + manualAlerts.Count
+            total = autoAlerts.Count + manualAlerts.Count
         });
     }
-    
+
     [HttpPatch("alerts/{id:int}/done")]
+    [RequirePermission("CloseAlert")]
     public async Task<IActionResult> MarkAlertDone(int id)
     {
         var alert = await context.SystemAlerts.FindAsync(id);
@@ -257,6 +259,7 @@ public class DashboardController(AppDbContext context) : ControllerBase
     }
 
     [HttpGet("activity")]
+    [RequirePermission("ViewDashboard")]
     public async Task<IActionResult> GetActivity()
     {
         var arrivals = await context.AdoptAnimal
@@ -264,10 +267,10 @@ public class DashboardController(AppDbContext context) : ControllerBase
             .Where(aa => aa.Status == AdoptionStatus.Returned || aa.OwnerId == null)
             .Select(aa => new
             {
-                date        = (DateTime?)aa.ArrivalDate,
+                date = (DateTime?)aa.ArrivalDate,
                 description = $"{aa.Animal.Name} прибула до притулку",
-                type        = "arrival",
-                icon        = "paw"
+                type = "arrival",
+                icon = "paw"
             })
             .Take(20)
             .ToListAsync();
@@ -277,10 +280,10 @@ public class DashboardController(AppDbContext context) : ControllerBase
             .Where(aa => aa.Status == AdoptionStatus.Adopted && aa.AdoptDate != null)
             .Select(aa => new
             {
-                date        = (DateTime?)aa.AdoptDate,
+                date = (DateTime?)aa.AdoptDate,
                 description = $"{aa.Animal.Name} знайшла нову родину",
-                type        = "adoption",
-                icon        = "heart"
+                type = "adoption",
+                icon = "heart"
             })
             .Take(20)
             .ToListAsync();
@@ -291,10 +294,10 @@ public class DashboardController(AppDbContext context) : ControllerBase
             .Take(10)
             .Select(t => new
             {
-                date        = (DateTime?)t.TransactionDate,
+                date = (DateTime?)t.TransactionDate,
                 description = $"{(t.IsIncome ? "Надходження" : "Витрата")}: {t.Amount:N0} ₴ — {t.Category!.Name}",
-                type        = t.IsIncome ? "income" : "expense",
-                icon        = "wallet"
+                type = t.IsIncome ? "income" : "expense",
+                icon = "wallet"
             })
             .ToListAsync();
 
@@ -306,10 +309,10 @@ public class DashboardController(AppDbContext context) : ControllerBase
             .Take(10)
             .Select(fl => new
             {
-                date        = (DateTime?)fl.FedAt,
+                date = (DateTime?)fl.FedAt,
                 description = $"{fl.Animal!.Name} нагодована ({fl.Amount} {fl.FoodType!.Unit} {fl.FoodType.Name})",
-                type        = "feeding",
-                icon        = "utensils"
+                type = "feeding",
+                icon = "utensils"
             })
             .ToListAsync();
 

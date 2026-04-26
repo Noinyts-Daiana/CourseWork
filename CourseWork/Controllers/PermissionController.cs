@@ -1,5 +1,6 @@
 ﻿using CourseWork.DTOs;
 using CourseWork.Models;
+using CourseWork.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace CourseWork.Controllers;
 public class PermissionController(AppDbContext context) : ControllerBase
 {
     [HttpGet]
+    [RequirePermission("EditUser")]
     public async Task<IActionResult> GetAll()
     {
         var permissions = await context.Permission
@@ -23,6 +25,7 @@ public class PermissionController(AppDbContext context) : ControllerBase
     }
 
     [HttpGet("role/{roleId:int}")]
+    [RequirePermission("EditUser")]
     public async Task<IActionResult> GetByRole(int roleId)
     {
         var role = await context.Role.FindAsync(roleId);
@@ -47,6 +50,7 @@ public class PermissionController(AppDbContext context) : ControllerBase
     }
 
     [HttpGet("roles")]
+    [RequirePermission("EditUser")]
     public async Task<IActionResult> GetAllRolesWithPermissions()
     {
         var roles = await context.Role.ToListAsync();
@@ -73,8 +77,9 @@ public class PermissionController(AppDbContext context) : ControllerBase
 
         return Ok(result);
     }
-    
+
     [HttpPut("role/{roleId:int}")]
+    [RequirePermission("EditUser")]
     public async Task<IActionResult> UpdateRolePermissions(
         int roleId,
         [FromBody] UpdateRolePermissionsDto dto)
@@ -105,6 +110,7 @@ public class PermissionController(AppDbContext context) : ControllerBase
     }
 
     [HttpPost("role/{roleId:int}/add/{permissionId:int}")]
+    [RequirePermission("EditUser")]
     public async Task<IActionResult> AddPermission(int roleId, int permissionId)
     {
         var exists = await context.RolePermission
@@ -123,6 +129,7 @@ public class PermissionController(AppDbContext context) : ControllerBase
     }
 
     [HttpDelete("role/{roleId:int}/remove/{permissionId:int}")]
+    [RequirePermission("EditUser")]
     public async Task<IActionResult> RemovePermission(int roleId, int permissionId)
     {
         var rp = await context.RolePermission
@@ -135,10 +142,10 @@ public class PermissionController(AppDbContext context) : ControllerBase
 
         return Ok(new { message = "Дозвіл видалено" });
     }
-
+    
     [HttpGet("check")]
     public async Task<IActionResult> CheckPermission(
-        [FromQuery] int    userId,
+        [FromQuery] int userId,
         [FromQuery] string permission)
     {
         var user = await context.User.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == userId);

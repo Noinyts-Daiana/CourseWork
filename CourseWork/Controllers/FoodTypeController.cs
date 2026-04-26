@@ -1,14 +1,18 @@
 ﻿using CourseWork.DTOs;
 using CourseWork.Services.Interfaces;
+using CourseWork.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CourseWork.Controllers;
 
 [ApiController]
 [Route("api/food-type")]
+[Authorize]
 public class FoodTypeController(IFoodTypeService foodTypeService) : ControllerBase
 {
     [HttpGet]
+    [RequirePermission("ViewAnimals")]
     public async Task<IActionResult> GetFoodTypes(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 9,
@@ -18,28 +22,22 @@ public class FoodTypeController(IFoodTypeService foodTypeService) : ControllerBa
         var items = await foodTypeService.GetAllAsync(pageNumber, pageSize, searchTerm, isLowStock);
         var totalCount = await foodTypeService.GetCountAsync(searchTerm, isLowStock);
 
-        return Ok(new
-        {
-            items,
-            totalCount,
-            pageNumber,
-            pageSize
-        });
+        return Ok(new { items, totalCount, pageNumber, pageSize });
     }
 
     [HttpGet("{id}")]
+    [RequirePermission("ViewAnimals")]
     public async Task<IActionResult> GetById(int id)
     {
         var foodType = await foodTypeService.GetByIdAsync(id);
         if (foodType == null)
-        {
             return NotFound(new { message = $"Тип корму з ID {id} не знайдено" });
-        }
 
         return Ok(foodType);
     }
 
     [HttpPost]
+    [RequirePermission("CreateFoodType")]
     public async Task<IActionResult> Create([FromBody] FoodTypeDto foodTypeDto)
     {
         await foodTypeService.AddAsync(foodTypeDto);
@@ -47,6 +45,7 @@ public class FoodTypeController(IFoodTypeService foodTypeService) : ControllerBa
     }
 
     [HttpPut("{id}")]
+    [RequirePermission("EditFoodType")]
     public async Task<IActionResult> Update(int id, [FromBody] FoodTypeDto foodTypeDto)
     {
         try
@@ -65,6 +64,7 @@ public class FoodTypeController(IFoodTypeService foodTypeService) : ControllerBa
     }
 
     [HttpDelete("{id}")]
+    [RequirePermission("DeleteFoodType")]
     public async Task<IActionResult> Delete(int id)
     {
         try
@@ -77,8 +77,9 @@ public class FoodTypeController(IFoodTypeService foodTypeService) : ControllerBa
             return NotFound(new { message = ex.Message });
         }
     }
-    
+
     [HttpPatch("{id}/adjust-stock")]
+    [RequirePermission("ReplenishFood")]
     public async Task<IActionResult> AdjustStock(int id, [FromBody] FoodTypeDto dto)
     {
         try
@@ -95,7 +96,9 @@ public class FoodTypeController(IFoodTypeService foodTypeService) : ControllerBa
             return NotFound(new { message = ex.Message });
         }
     }
+
     [HttpGet("brands")]
+    [RequirePermission("ViewAnimals")]
     public async Task<IActionResult> GetBrands(
         [FromQuery] string? searchTerm = null,
         [FromQuery] int pageNumber = 1,
@@ -104,12 +107,6 @@ public class FoodTypeController(IFoodTypeService foodTypeService) : ControllerBa
         var brands = await foodTypeService.GetBrandsAsync(searchTerm, pageNumber, pageSize);
         var totalCount = await foodTypeService.GetBrandsCountAsync(searchTerm);
 
-        return Ok(new
-        {
-            items = brands, 
-            totalCount,
-            pageNumber,
-            pageSize
-        });
+        return Ok(new { items = brands, totalCount, pageNumber, pageSize });
     }
 }

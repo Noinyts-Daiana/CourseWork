@@ -1,15 +1,18 @@
 ﻿using CourseWork.DTOs;
 using CourseWork.Services;
+using CourseWork.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CourseWork.Controllers;
 
 [ApiController]
 [Route("api/medical-exams")]
+[Authorize]
 public class MedicalExamController(IMedicalExamService medicalExamService) : ControllerBase
 {
-
     [HttpGet]
+    [RequirePermission("ViewMedicalExams")]
     public async Task<IActionResult> GetMedicalExams(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 9,
@@ -26,8 +29,8 @@ public class MedicalExamController(IMedicalExamService medicalExamService) : Con
         });
     }
 
-
     [HttpGet("{id}")]
+    [RequirePermission("ViewMedicalExams")]
     public async Task<IActionResult> GetMedicalExamAsync(int id)
     {
         var medicalExam = await medicalExamService.GetMedicalExamAsync(id);
@@ -35,6 +38,7 @@ public class MedicalExamController(IMedicalExamService medicalExamService) : Con
     }
 
     [HttpPost]
+    [RequirePermission("AddMedicalExam")]
     public async Task<IActionResult> CreateMedicalExamAsync([FromBody] MedicalExamDTO medicalExamDto)
     {
         await medicalExamService.AddMedicalExamAsync(medicalExamDto);
@@ -42,6 +46,7 @@ public class MedicalExamController(IMedicalExamService medicalExamService) : Con
     }
 
     [HttpPut("{id}")]
+    [RequirePermission("EditMedicalExam")]
     public async Task<IActionResult> UpdateMedicalExamAsync(int id, [FromBody] MedicalExamDTO medicalExamDto)
     {
         await medicalExamService.UpdateMedicalExamAsync(id, medicalExamDto);
@@ -49,10 +54,10 @@ public class MedicalExamController(IMedicalExamService medicalExamService) : Con
     }
 
     [HttpDelete("{id}")]
+    [RequirePermission("DeleteMedicalExam")]
     public async Task<IActionResult> DeleteMedicalExamAsync(int id)
     {
         await medicalExamService.DeleteMedicalExamAsync(id);
         return Ok();
     }
-
 }

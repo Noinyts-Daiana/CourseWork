@@ -1,14 +1,19 @@
-﻿using CourseWork.DTOs;
+﻿// ─── AnimalPhotoController.cs ────────────────────────────────────────────────
+using CourseWork.DTOs;
 using CourseWork.Services.Interfaces;
+using CourseWork.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CourseWork.Controllers;
 
 [ApiController]
 [Route("api/animal-photo")]
+[Authorize]
 public class AnimalPhotoController(IAnimalPhotoService photoService) : ControllerBase
 {
     [HttpPost]
+    [RequirePermission("AddAnimal")]
     public async Task<IActionResult> UploadPhoto([FromForm] AnimalPhotoDto dto)
     {
         try
@@ -23,6 +28,7 @@ public class AnimalPhotoController(IAnimalPhotoService photoService) : Controlle
     }
 
     [HttpGet("animal/{animalId}")]
+    [RequirePermission("ViewAnimals")]
     public async Task<IActionResult> GetPhotos(int animalId)
     {
         var photos = await photoService.GetPhotosByAnimalAsync(animalId);
@@ -30,6 +36,7 @@ public class AnimalPhotoController(IAnimalPhotoService photoService) : Controlle
     }
 
     [HttpPatch("{id}/setmain/animal/{animalId}")]
+    [RequirePermission("EditAnimal")]
     public async Task<IActionResult> SetMainPhoto(int id, int animalId)
     {
         try
@@ -44,6 +51,7 @@ public class AnimalPhotoController(IAnimalPhotoService photoService) : Controlle
     }
 
     [HttpDelete("{id}")]
+    [RequirePermission("EditAnimal")]
     public async Task<IActionResult> DeletePhoto(int id)
     {
         try
