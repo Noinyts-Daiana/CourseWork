@@ -16,25 +16,26 @@ public class TokenService : ITokenService
         _config = config;
     }
 
-    public string GenerateJwtToken(int id, string role)
+    public string GenerateJwtToken(int userId, string roleName, int roleId)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, id.ToString()),
-            new Claim(ClaimTypes.Role, role)
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim(ClaimTypes.Role, roleName),
+            new Claim("roleId", roleId.ToString())  
         };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+ 
+        var key   = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
+ 
         var token = new JwtSecurityToken(
-            issuer: _config["Jwt:Issuer"],
-            audience: _config["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.Now.AddDays(7),
+            issuer:             _config["Jwt:Issuer"],
+            audience:           _config["Jwt:Audience"],
+            claims:             claims,
+            expires:            DateTime.Now.AddDays(7),
             signingCredentials: creds
         );
-
+ 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 

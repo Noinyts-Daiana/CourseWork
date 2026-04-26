@@ -56,7 +56,7 @@ public class UsersController(
    {
       var createdUser = await userService.AddUser(userDto);
 
-      var token = tokenService.GenerateJwtToken(createdUser.UserId, "User"); 
+      var token = tokenService.GenerateJwtToken(createdUser.UserId, "User", 3); 
    
       tokenService.SetAuthCookie(token);
       
