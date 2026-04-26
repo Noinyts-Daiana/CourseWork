@@ -245,7 +245,7 @@ public class DashboardController(AppDbContext context) : ControllerBase
     }
 
     [HttpPatch("alerts/{id:int}/done")]
-    [RequirePermission("CloseAlert")]
+    [RequirePermission("CloseAlerts")]
     public async Task<IActionResult> MarkAlertDone(int id)
     {
         var alert = await context.SystemAlerts.FindAsync(id);

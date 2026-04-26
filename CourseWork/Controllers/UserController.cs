@@ -4,6 +4,7 @@ using CourseWork.DTOs;
 using CourseWork.Services;
 using CourseWork.Attributes;
 using Microsoft.AspNetCore.Authorization;
+using CourseWork.Repositories.Interfaces;
 
 namespace CourseWork.Controllers;
 
@@ -12,6 +13,8 @@ namespace CourseWork.Controllers;
 public class UsersController(
     IUserService userService,
     ITokenService tokenService,
+    IPermissionService permissionService,
+    IUserRepository userRepository,
     ILogger<UsersController> logger) : ControllerBase
 {
     [HttpGet]
@@ -54,19 +57,58 @@ public class UsersController(
         return Ok(user);
     }
 
-    // Публічна реєстрація — без пермішину
     [HttpPost("register")]
     public async Task<IActionResult> CreateUser([FromBody] UserDto userDto)
     {
         var createdUser = await userService.AddUser(userDto);
-        var token = tokenService.GenerateJwtToken(createdUser.UserId, "User", 3);
+        var permissions = await permissionService.GetRolePermissionsAsync(createdUser.RoleId);
+        var token = tokenService.GenerateJwtToken(createdUser.UserId, createdUser.RoleName ?? "User", createdUser.RoleId);
         tokenService.SetAuthCookie(token);
 
         return Ok(new
         {
-            User = createdUser,
+            createdUser.UserId,
+            createdUser.FullName,
+            createdUser.Email,
+            createdUser.RoleId,
+            createdUser.RoleName,
+            createdUser.IsActive,
+            permissions,
             Message = "Реєстрація успішна!"
         });
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    {
+        var user = await userRepository.GetByEmailAsync(dto.Email);
+        if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
+            return Unauthorized(new { message = "Невірний email або пароль" });
+
+        if (!user.IsActive)
+            return Unauthorized(new { message = "Обліковий запис деактивовано" });
+
+        var permissions = await permissionService.GetRolePermissionsAsync(user.RoleId);
+        var token = tokenService.GenerateJwtToken(user.Id, user.Role?.Name ?? "User", user.RoleId);
+        tokenService.SetAuthCookie(token);
+
+        return Ok(new
+        {
+            userId = user.Id,
+            fullName = user.FullName,
+            email = user.Email,
+            roleId = user.RoleId,
+            roleName = user.Role?.Name,
+            isActive = user.IsActive,
+            permissions
+        });
+    }
+
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("token", new CookieOptions { Path = "/" });
+        return Ok(new { message = "Вихід успішний" });
     }
 
     [HttpGet("me")]
@@ -78,7 +120,20 @@ public class UsersController(
 
         var userId = int.Parse(userIdString!);
         var user = await userService.GetUserById(userId);
-        return Ok(user);
+        if (user == null) return NotFound();
+
+        var permissions = await permissionService.GetRolePermissionsAsync(user.RoleId);
+
+        return Ok(new
+        {
+            userId = user.UserId,
+            fullName = user.FullName,
+            email = user.Email,
+            roleId = user.RoleId,
+            roleName = user.RoleName,
+            isActive = user.IsActive,
+            permissions
+        });
     }
 
     [HttpPut("me")]

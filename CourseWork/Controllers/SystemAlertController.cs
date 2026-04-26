@@ -41,7 +41,7 @@ public class SystemAlertController(ISystemAlertService alertService) : Controlle
     }
 
     [HttpPatch("{id:int}/done")]
-    [RequirePermission("CloseAlert")]
+    [RequirePermission("CloseAlerts")]
     public async Task<IActionResult> MarkDone(int id)
     {
         await alertService.MarkDoneAsync(id);
@@ -49,7 +49,7 @@ public class SystemAlertController(ISystemAlertService alertService) : Controlle
     }
 
     [HttpDelete("{id:int}")]
-    [RequirePermission("CloseAlert")]
+    [RequirePermission("CloseAlerts")]
     public async Task<IActionResult> Delete(int id)
     {
         await alertService.DeleteAsync(id);
