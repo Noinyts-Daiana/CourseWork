@@ -7,15 +7,15 @@ namespace CourseWork.Services;
 
 public class FoodTypeService(IFoodRepository foodRepository): IFoodTypeService
 {
-    public async Task<IEnumerable<FoodTypeDto>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm)
+    public async Task<IEnumerable<FoodTypeDto>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, bool? isLowStock = null)
     {
-        var foodTypes = await foodRepository.GetAllAsync(pageNumber, pageSize, searchTerm);
+        var foodTypes = await foodRepository.GetAllAsync(pageNumber, pageSize, searchTerm, isLowStock);
         return foodTypes.Select(f => f.ToDto());
     }
 
-    public async Task<int> GetCountAsync(string? searchTerm)
+    public async Task<int> GetCountAsync(string? searchTerm, bool? isLowStock = null)
     {
-        return await foodRepository.GetCountAsync(searchTerm);
+        return await foodRepository.GetCountAsync(searchTerm, isLowStock);
     }
 
     public async Task<FoodTypeDto?> GetByIdAsync(int id)

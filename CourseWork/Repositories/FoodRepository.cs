@@ -7,7 +7,7 @@ namespace CourseWork.Repositories;
 
 public class FoodRepository(AppDbContext context) : IFoodRepository
 {
-    public async Task<IEnumerable<FoodType>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm)
+    public async Task<IEnumerable<FoodType>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, bool? isLowStock = null)
     {
         var query = context.FoodType.AsQueryable();
 
@@ -18,6 +18,13 @@ public class FoodRepository(AppDbContext context) : IFoodRepository
                 EF.Functions.ILike(f.Name, $"%{term}%") || 
                 EF.Functions.ILike(f.Brand, $"%{term}%"));
         }
+        if (isLowStock.HasValue)
+        {
+            if (isLowStock.Value)
+                query = query.Where(f => f.StockQuantity <= f.MinThreshold); 
+            else
+                query = query.Where(f => f.StockQuantity > f.MinThreshold);  
+        }
 
         return await query
             .OrderBy(f => f.Id) 
@@ -26,7 +33,7 @@ public class FoodRepository(AppDbContext context) : IFoodRepository
             .ToListAsync();
     }
 
-    public async Task<int> GetCountAsync(string? searchTerm)
+    public async Task<int> GetCountAsync(string? searchTerm, bool? isLowStock = null)
     {
         var query = context.FoodType.AsQueryable();
 
@@ -36,6 +43,14 @@ public class FoodRepository(AppDbContext context) : IFoodRepository
             query = query.Where(f => 
                 f.Name.ToLower().Contains(term) || 
                 f.Brand.ToLower().Contains(term));
+        }
+        
+        if (isLowStock.HasValue)
+        {
+            if (isLowStock.Value)
+                query = query.Where(f => f.StockQuantity <= f.MinThreshold);
+            else
+                query = query.Where(f => f.StockQuantity > f.MinThreshold);
         }
 
         return await query.CountAsync();

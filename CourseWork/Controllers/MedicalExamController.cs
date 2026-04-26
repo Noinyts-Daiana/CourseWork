@@ -6,7 +6,7 @@ namespace CourseWork.Controllers;
 
 [ApiController]
 [Route("api/medical-exams")]
-public class MedicalExamController(IMedicalExamService medicalExamService): ControllerBase
+public class MedicalExamController(IMedicalExamService medicalExamService) : ControllerBase
 {
 
     [HttpGet]
@@ -20,7 +20,7 @@ public class MedicalExamController(IMedicalExamService medicalExamService): Cont
         return Ok(new
         {
             items = medicalExams,
-            totalCount = await medicalExamService.GetMedicalExamsCountAsync(),
+            totalCount = await medicalExamService.GetMedicalExamsCountAsync(searchTerm),
             pageNumber = pageNumber,
             pageSize = pageSize
         });
@@ -31,7 +31,7 @@ public class MedicalExamController(IMedicalExamService medicalExamService): Cont
     public async Task<IActionResult> GetMedicalExamAsync(int id)
     {
         var medicalExam = await medicalExamService.GetMedicalExamAsync(id);
-        return  Ok(medicalExam);
+        return Ok(medicalExam);
     }
 
     [HttpPost]
@@ -47,4 +47,12 @@ public class MedicalExamController(IMedicalExamService medicalExamService): Cont
         await medicalExamService.UpdateMedicalExamAsync(id, medicalExamDto);
         return Ok();
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteMedicalExamAsync(int id)
+    {
+        await medicalExamService.DeleteMedicalExamAsync(id);
+        return Ok();
+    }
+
 }

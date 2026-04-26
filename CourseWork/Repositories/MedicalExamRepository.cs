@@ -55,15 +55,27 @@ public class MedicalExamRepository(AppDbContext context): IMedicalExamRepository
         context.MedicalExam.Update(medicalExam);
         await context.SaveChangesAsync();
     }
-
-    public async Task DeleteMedicalExamAsync(MedicalExam medicalExam)
+    
+    public async Task DeleteMedicalExamAsync(int id)
     {
-        context.MedicalExam.Remove(medicalExam);
-        await context.SaveChangesAsync();
+        var medicalExam = await context.MedicalExam.FindAsync(id);
+
+        if (medicalExam != null)
+        {
+            context.MedicalExam.Remove(medicalExam);
+            await context.SaveChangesAsync();
+        }
     }
-
-    public async Task<int> GetMedicalExamsCountAsync()
+    
+    public async Task<int> GetMedicalExamsCountAsync(string? searchTerm = null)
     {
-        return await context.MedicalExam.CountAsync();
+        var query = context.MedicalExam.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(e => e.Animal.Name.Contains(searchTerm));
+        }
+
+        return await query.CountAsync();
     }
 }

@@ -9,5 +9,5 @@ public interface IVaccinationService
     Task AddVaccinationAsync(VaccinationDto vaccination);
     Task UpdateVaccinationAsync(int id, VaccinationDto vaccination);
     Task DeleteVaccinationAsync(int id);
-    Task<int> GetVaccinationsCountAsync();
+    Task<int> GetVaccinationsCountAsync(string? searchTerm = null);
 }

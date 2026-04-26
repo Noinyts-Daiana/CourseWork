@@ -10,4 +10,5 @@ public interface ITransactionService
     Task<IEnumerable<TransactionCategoryDto>> GetCategoriesAsync(string? searchTerm, int pageNumber, int pageSize);
     Task<int> GetCategoriesCountAsync(string? searchTerm); 
     Task<TransactionDto?> UpdateTransactionAsync(int id, TransactionDto dto);
+    Task DeleteTransactionAsync(int id);
 }

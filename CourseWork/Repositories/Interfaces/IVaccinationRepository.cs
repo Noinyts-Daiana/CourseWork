@@ -9,5 +9,5 @@ public interface IVaccinationRepository
     Task AddVaccinationAsync(Vaccination vaccination);
     Task UpdateVaccinationAsync(int id, Vaccination vaccination);
     Task DeleteVaccinationAsync(int id);
-    Task<int> GetVaccinationsCountAsync();
+    Task<int> GetVaccinationsCountAsync(string? searchTerm = null);
 }

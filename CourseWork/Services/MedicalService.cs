@@ -40,13 +40,13 @@ public class MedicalService(IMedicalExamRepository medicalExamRepository) : IMed
         await medicalExamRepository.UpdateMedicalExamAsync(id, medicalExamDto.ToEntity());
     }
 
-    public async Task DeleteMedicalExamAsync(MedicalExamDTO medicalExamDto)
+    public async Task DeleteMedicalExamAsync(int id)
     {
-        await medicalExamRepository.DeleteMedicalExamAsync(medicalExamDto.ToEntity());
+        await medicalExamRepository.DeleteMedicalExamAsync(id);
     }
 
-    public async Task<int> GetMedicalExamsCountAsync()
+    public async Task<int> GetMedicalExamsCountAsync(string? searchTerm = null)
     {
-        return await medicalExamRepository.GetMedicalExamsCountAsync();
+        return await medicalExamRepository.GetMedicalExamsCountAsync(searchTerm);
     }
 }

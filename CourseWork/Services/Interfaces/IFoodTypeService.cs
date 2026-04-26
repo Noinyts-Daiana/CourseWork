@@ -5,8 +5,8 @@ namespace CourseWork.Services.Interfaces;
 
 public interface IFoodTypeService
 {
-    Task<IEnumerable<FoodTypeDto>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm);
-    Task<int> GetCountAsync(string? searchTerm);
+    Task<IEnumerable<FoodTypeDto>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, bool? isLowStock = null);
+    Task<int> GetCountAsync(string? searchTerm,  bool? isLowStock = null);
     Task<FoodTypeDto?> GetByIdAsync(int id);
     Task AddAsync(FoodTypeDto foodTypeDto);
     Task UpdateAsync(int id, FoodTypeDto foodTypeDto);

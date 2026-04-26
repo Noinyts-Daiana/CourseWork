@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseWork.Repositories;
 
-public class VaccinationRepository(AppDbContext context): IVaccinationRepository
+public class VaccinationRepository(AppDbContext context) : IVaccinationRepository
 {
     public async Task<IEnumerable<Vaccination>> GetAllVaccinationsAsync(int pageNumber, int pageSize,
         string? searchTerm)
@@ -13,14 +13,16 @@ public class VaccinationRepository(AppDbContext context): IVaccinationRepository
         if (!string.IsNullOrEmpty(searchTerm))
         {
             var searchPattern = $"%{searchTerm}%";
-            return query.Include(m=>m.Animal)
-                .Where(v=> 
-                    EF.Functions.ILike(v.Animal.Name, searchPattern) || 
+            return query.Include(m => m.Animal)
+                .Where(v =>
+                    EF.Functions.ILike(v.Animal.Name, searchPattern) ||
                     EF.Functions.ILike(v.VaccineName, searchPattern));
-        };
-        
+        }
+
+        ;
+
         int skip = (pageNumber - 1) * pageSize;
-        return await context.Vaccination.Include(m=>m.Animal).Skip(skip).Take(pageSize).ToListAsync();
+        return await context.Vaccination.Include(m => m.Animal).Skip(skip).Take(pageSize).ToListAsync();
     }
 
     public async Task<Vaccination?> GetVaccinationAsync(int id)
@@ -49,11 +51,18 @@ public class VaccinationRepository(AppDbContext context): IVaccinationRepository
             context.Vaccination.Remove(vaccination);
             await context.SaveChangesAsync();
         }
-        
+
     }
-    
-    public async Task<int> GetVaccinationsCountAsync()
+
+    public async Task<int> GetVaccinationsCountAsync(string? searchTerm = null)
     {
-        return await context.Vaccination.CountAsync();
+        var query = context.Vaccination.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(e => e.Animal.Name.Contains(searchTerm));
+        }
+
+        return await query.CountAsync();
     }
 }

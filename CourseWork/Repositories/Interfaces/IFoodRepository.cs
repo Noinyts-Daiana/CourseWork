@@ -4,8 +4,8 @@ namespace CourseWork.Repositories.Interfaces;
 
 public interface IFoodRepository
 {
-    Task<IEnumerable<FoodType>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm);
-    Task<int> GetCountAsync(string? searchTerm);
+    Task<IEnumerable<FoodType>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, bool? isLowStock = null);
+    Task<int> GetCountAsync(string? searchTerm, bool? isLowStock = null);
     Task<FoodType?> GetByIdAsync(int id);
     Task AddAsync(FoodType foodType);
     Task UpdateAsync(FoodType foodType);

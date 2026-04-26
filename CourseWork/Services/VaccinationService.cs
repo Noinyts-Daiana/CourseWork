@@ -35,9 +35,9 @@ public class VaccinationService(IVaccinationRepository vaccinationRepository): I
         await  vaccinationRepository.DeleteVaccinationAsync(id);
     }
 
-    public Task<int> GetVaccinationsCountAsync()
+    public Task<int> GetVaccinationsCountAsync(string? searchTerm = null)
     {
-        return vaccinationRepository.GetVaccinationsCountAsync();
+        return vaccinationRepository.GetVaccinationsCountAsync(searchTerm);
     }
 
 }

@@ -16,5 +16,5 @@ public class AdoptAnimalDto
     public DateTime? AdoptDate { get; set; }
     public int Status { get; set; }
     public string? AnimalBreed { get; set; } 
-    public virtual User Owner { get; set; }
+   // public virtual User? Owner { get; set; }
 }

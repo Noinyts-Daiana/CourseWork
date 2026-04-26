@@ -73,6 +73,7 @@ public class TransactionController(ITransactionService transactionService) : Con
             return StatusCode(500, new { message = "Сталася внутрішня помилка сервера.", details = ex.Message });
         }
     }
+
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateTransaction(int id, [FromBody] TransactionDto dto)
     {
@@ -80,5 +81,12 @@ public class TransactionController(ITransactionService transactionService) : Con
         if (updated == null) return NotFound(new { message = "Транзакцію не знайдено" });
         return Ok(updated);
     }
-    
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTransaction(int id)
+    {
+        transactionService.DeleteTransactionAsync(id);
+        return Ok();
+    }
+
 }

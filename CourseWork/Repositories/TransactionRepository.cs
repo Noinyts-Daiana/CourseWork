@@ -125,4 +125,12 @@ public class TransactionRepository(AppDbContext context) : ITransactionRepositor
         context.Transaction.Update(transaction);
         await context.SaveChangesAsync();
     }
+
+    public async Task DeleteAsync(int id)
+    {
+        var transaction = await context.Transaction.FindAsync(id);
+        context.Transaction.Remove(transaction);
+        await context.SaveChangesAsync();
+    }
+    
 }

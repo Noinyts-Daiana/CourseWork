@@ -18,7 +18,7 @@ public class VaccinationController(IVaccinationService vaccinationService): Cont
         var vaccinations = await vaccinationService.GetAllVaccinationsAsync(pageNumber, pageSize, searchTerm);
         return Ok( new{
             items = vaccinations,
-            totalCount = await vaccinationService.GetVaccinationsCountAsync(),
+            totalCount = await vaccinationService.GetVaccinationsCountAsync(searchTerm),
             pageNumber = pageNumber,
             pageSize = pageSize});
     }
@@ -34,6 +34,13 @@ public class VaccinationController(IVaccinationService vaccinationService): Cont
     public async Task<IActionResult> AddVaccinationAsync([FromBody] VaccinationDto vaccinationDto)
     {
         await vaccinationService.AddVaccinationAsync(vaccinationDto);
+        return Ok();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteVaccinationAsync(int id)
+    {
+        await vaccinationService.DeleteVaccinationAsync(id);
         return Ok();
     }
 }

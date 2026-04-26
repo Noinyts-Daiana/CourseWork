@@ -96,4 +96,9 @@ public class TransactionService(ITransactionRepository repository) : ITransactio
         
         return dto;
     }
+
+    public async Task DeleteTransactionAsync(int id)
+    {
+        await repository.DeleteAsync(id);
+    }
 }

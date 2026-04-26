@@ -12,10 +12,11 @@ public class FoodTypeController(IFoodTypeService foodTypeService) : ControllerBa
     public async Task<IActionResult> GetFoodTypes(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 9,
-        [FromQuery] string? searchTerm = null)
+        [FromQuery] string? searchTerm = null,
+        [FromQuery] bool? isLowStock = null)
     {
-        var items = await foodTypeService.GetAllAsync(pageNumber, pageSize, searchTerm);
-        var totalCount = await foodTypeService.GetCountAsync(searchTerm);
+        var items = await foodTypeService.GetAllAsync(pageNumber, pageSize, searchTerm, isLowStock);
+        var totalCount = await foodTypeService.GetCountAsync(searchTerm, isLowStock);
 
         return Ok(new
         {

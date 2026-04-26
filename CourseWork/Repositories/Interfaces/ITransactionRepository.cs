@@ -13,4 +13,5 @@ public interface ITransactionRepository
     Task<TransactionCategories> AddCategoryAsync(TransactionCategories category);
     Task UpdateAsync(Transaction transaction);
     Task<Transaction?> GetByIdAsync(int id);
+    Task DeleteAsync(int id);
 }
