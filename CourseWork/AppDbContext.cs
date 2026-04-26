@@ -11,6 +11,8 @@ public class AppDbContext : DbContext
     public DbSet<Breed> Breed { get; set; } 
     public DbSet<Animal> Animal { get; set; }
     public DbSet<AdoptAnimal> AdoptAnimal { get; set; }
+    public DbSet<Permission> Permission { get; set; }
+    public DbSet<RolePermission> RolePermission { get; set; }
     public DbSet<Specie> Specie { get; set; }
     public DbSet<User> User { get; set; }
     public DbSet<Role> Role { get; set; }
