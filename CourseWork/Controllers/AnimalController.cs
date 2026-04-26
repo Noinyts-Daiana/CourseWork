@@ -11,6 +11,19 @@ namespace CourseWork.Controllers;
 [Authorize]
 public class AnimalController(IAnimalService animalService) : ControllerBase
 {
+    [HttpGet("public")]
+    [AllowAnonymous]
+    public async Task<ActionResult> GetPublicAnimals(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 8)
+    {
+        var animals = await animalService.GetAllAnimalsAsync(
+            pageNumber, pageSize, null, null, null, null, null, false);
+        var total = await animalService.GetAnimalsCountAsync(
+            null, null, null, null, null, false);
+        return Ok(new { items = animals, totalCount = total, pageNumber, pageSize });
+    }
+
     [HttpGet]
     [RequirePermission("ViewAnimals")]
     public async Task<ActionResult> GetAllAnimals(

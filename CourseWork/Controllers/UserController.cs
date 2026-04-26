@@ -132,6 +132,7 @@ public class UsersController(
             roleId = user.RoleId,
             roleName = user.RoleName,
             isActive = user.IsActive,
+            createdAt = user.CreatedAt,
             permissions
         });
     }
