@@ -14,4 +14,5 @@ public interface ITransactionRepository
     Task UpdateAsync(Transaction transaction);
     Task<Transaction?> GetByIdAsync(int id);
     Task DeleteAsync(int id);
+    Task<decimal> GetTotalBalanceAsync();
 }

@@ -20,11 +20,10 @@ public class AppDbContext : DbContext
     public DbSet<FoodType> FoodType { get; set; }
     public DbSet<FeedingLog> FeedingLog { get; set; }
     public DbSet<Vaccination> Vaccination { get; set; }
-    
-    public DbSet<FeedingLog> FeedingLogs { get; set; }
     public DbSet<AnimalPhoto> AnimalPhoto { get; set; }
     public DbSet<Transaction> Transaction { get; set; }
     public DbSet<TransactionCategories> TransactionCategorie { get; set; }
+    public DbSet<SystemAlerts> SystemAlerts { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

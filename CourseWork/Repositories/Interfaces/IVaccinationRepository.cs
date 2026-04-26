@@ -10,4 +10,5 @@ public interface IVaccinationRepository
     Task UpdateVaccinationAsync(int id, Vaccination vaccination);
     Task DeleteVaccinationAsync(int id);
     Task<int> GetVaccinationsCountAsync(string? searchTerm = null);
+    Task<IEnumerable<Vaccination>> GetUpcomingVaccinationsAsync(DateTime warningDate);
 }

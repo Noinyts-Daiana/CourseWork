@@ -133,4 +133,11 @@ public class TransactionRepository(AppDbContext context) : ITransactionRepositor
         await context.SaveChangesAsync();
     }
     
+    public async Task<decimal> GetTotalBalanceAsync()
+    {
+        var transactions = await context.Transaction.ToListAsync();
+        decimal totalIncome = transactions.Where(t => t.IsIncome).Sum(t => t.Amount);
+        decimal totalExpense = transactions.Where(t => !t.IsIncome).Sum(t => t.Amount);
+        return totalIncome - totalExpense;
+    }
 }

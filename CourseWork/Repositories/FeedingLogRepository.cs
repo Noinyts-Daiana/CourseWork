@@ -1,4 +1,4 @@
-﻿using CourseWork.Models; // Твій шлях до моделей
+﻿using CourseWork.Models; 
 using CourseWork.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,12 +34,12 @@ public class FeedingLogRepository(AppDbContext context) : IFeedingLogRepository
     }
     public async Task UpdateAsync(FeedingLog log)
     {
-        context.FeedingLogs.Update(log);
+        context.FeedingLog.Update(log);
         await context.SaveChangesAsync();
     }
     public async Task<FeedingLog?> GetByIdAsync(int id)
     {
-        return await context.FeedingLogs
+        return await context.FeedingLog
             .Include(l => l.Animal)
             .Include(l => l.FoodType)
             .Include(l => l.FedBy)
@@ -47,7 +47,7 @@ public class FeedingLogRepository(AppDbContext context) : IFeedingLogRepository
     }
     public async Task DeleteAsync(FeedingLog log)
     {
-        context.FeedingLogs.Remove(log);
+        context.FeedingLog.Remove(log);
         await context.SaveChangesAsync();
     }
 }

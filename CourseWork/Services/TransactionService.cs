@@ -6,7 +6,7 @@ using CourseWork.Services.Interfaces;
 
 namespace CourseWork.Services;
 
-public class TransactionService(ITransactionRepository repository) : ITransactionService
+public class TransactionService(ITransactionRepository repository, ISystemAlertService alertService) : ITransactionService
 {
     public async Task<TransactionDto> CreateTransactionAsync(TransactionDto dto)
     {
@@ -41,8 +41,23 @@ public class TransactionService(ITransactionRepository repository) : ITransactio
 
         await repository.AddAsync(transaction);
         
+
+        await repository.AddAsync(transaction);
+    
+        if (!dto.IsIncome && dto.Amount >= 10000)
+        {
+            await alertService.CreateAsync(new SystemAlertDto
+            {
+                Message = $"Зафіксовано велику витрату: {dto.Amount} ₴ (Категорія: {dto.CategoryName ?? "Невідомо"})",
+                Type = "system", 
+                Severity = "warning",
+                IsAuto = true
+            });
+        }
+
         var resultDto = transaction.ToDto();
         resultDto.CategoryName = dto.CategoryName; 
+    
         
         return resultDto;
     }

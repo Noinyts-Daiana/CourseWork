@@ -60,6 +60,7 @@ builder.Services.AddCors(options =>
 
 // 1. ПІДКЛЮЧЕННЯ КОНТРОЛЕРІВ
 builder.Services.AddControllers();
+builder.Services.AddSignalR(); // Додаємо підтримку WebSockets
 
 // 2. SWAGGER (Тільки Swashbuckle!)
 builder.Services.AddEndpointsApiExplorer();
@@ -89,7 +90,7 @@ builder.Services.AddScoped<IFoodRepository, FoodRepository>();
 builder.Services.AddScoped<IFeedingLogRepository, FeedingLogRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IAnimalPhotoRepository, AnimalPhotoRepository>();
-
+builder.Services.AddScoped<ISystemAlertRepository, SystemAlertRepository>();
 // 5. РЕЄСТРАЦІЯ СЕРВІСІВ
 builder.Services.AddScoped<IAnimalService, AnimalService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -104,6 +105,7 @@ builder.Services.AddScoped<IFoodTypeService, FoodTypeService>();
 builder.Services.AddScoped<IFeedingLogService, FeedingLogService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IAnimalPhotoService, AnimalPhotoService>();
+builder.Services.AddScoped<ISystemAlertService, SystemAlertService>();
 
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
@@ -129,6 +131,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<CourseWork.Hubs.AlertHub>("/alerthub"); 
 
 app.MapGet("/", () => "Shelter API is running!");
 

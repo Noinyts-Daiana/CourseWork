@@ -5,7 +5,7 @@ using CourseWork.Services.Interfaces;
 
 namespace CourseWork.Services;
 
-public class FoodTypeService(IFoodRepository foodRepository): IFoodTypeService
+public class FoodTypeService(IFoodRepository foodRepository, ISystemAlertService alertService): IFoodTypeService
 {
     public async Task<IEnumerable<FoodTypeDto>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, bool? isLowStock = null)
     {
@@ -71,6 +71,17 @@ public class FoodTypeService(IFoodRepository foodRepository): IFoodTypeService
 
         food.StockQuantity += amountChange;
         await foodRepository.UpdateAsync(food);
+
+        if (amountChange < 0 && food.StockQuantity <= food.MinThreshold)
+        {
+            await alertService.CreateAsync(new SystemAlertDto
+            {
+                Message = $"Критично низький запас: {food.Name} (Залишилось {food.StockQuantity} {food.Unit})",
+                Type = "inventory",
+                Severity = "danger",
+                IsAuto = true
+            });
+        }
     }
     public async Task<IEnumerable<string>> GetBrandsAsync(string? searchTerm, int pageNumber, int pageSize)
     {

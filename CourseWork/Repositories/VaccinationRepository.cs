@@ -65,4 +65,12 @@ public class VaccinationRepository(AppDbContext context) : IVaccinationRepositor
 
         return await query.CountAsync();
     }
+    
+    public async Task<IEnumerable<Vaccination>> GetUpcomingVaccinationsAsync(DateTime warningDate)
+    {
+        return await context.Vaccination
+            .Include(v => v.Animal)
+            .Where(v => v.NextDueDate <= warningDate)
+            .ToListAsync();
+    }
 }

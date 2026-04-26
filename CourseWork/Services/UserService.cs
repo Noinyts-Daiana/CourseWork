@@ -5,7 +5,7 @@ using CourseWork.Repositories.Interfaces;
 
 namespace CourseWork.Services;
 
-public class UserService(IUserRepository userRepository): IUserService
+public class UserService(IUserRepository userRepository, ISystemAlertService alertService): IUserService
 {
     public async Task<IEnumerable<UserDto>> GetUsers(int pageNumber, int pageSize, string? searchTerm = null, int? roleId = null,  bool? isActive = null)
     {
@@ -60,17 +60,24 @@ public class UserService(IUserRepository userRepository): IUserService
         {
             throw new InvalidOperationException("Користувач з таким Email вже існує.");
         }
-    
+
         var userEntity = userDto.ToEntity();
         userEntity.Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
         userEntity.IsActive = true;
         userEntity.CreatedAt = DateTime.UtcNow;
 
         await userRepository.AddUserAsync(userEntity);
-    
+
+        await alertService.CreateAsync(new SystemAlertDto
+        {
+            Message = $"Новий користувач зареєструвався в системі: {userDto.FullName} ({userDto.Email})",
+            Type = "system",
+            Severity = "info",
+            IsAuto = true
+        });
+
         return userEntity.ToDto();
     }
-
 
     public async Task<bool> UpdatePassword(int userId, ChangePasswordDto dto)
     {
