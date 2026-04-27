@@ -9,7 +9,7 @@ namespace CourseWork.Controllers;
 
 [ApiController]
 [Route("api/animal-photo")]
-[Authorize]
+//[Authorize]
 public class AnimalPhotoController(IAnimalPhotoService photoService) : ControllerBase
 {
     [HttpPost]
@@ -28,7 +28,7 @@ public class AnimalPhotoController(IAnimalPhotoService photoService) : Controlle
     }
 
     [HttpGet("animal/{animalId}")]
-    [RequirePermission("ViewAnimals")]
+    //[RequirePermission("ViewAnimals")]
     public async Task<IActionResult> GetPhotos(int animalId)
     {
         var photos = await photoService.GetPhotosByAnimalAsync(animalId);
