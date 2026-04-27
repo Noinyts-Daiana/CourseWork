@@ -11,4 +11,5 @@ public interface IMedicalExamRepository
     Task UpdateMedicalExamAsync(int id, MedicalExam medicalExam);
     Task DeleteMedicalExamAsync(int id);
     Task<int> GetMedicalExamsCountAsync(string? searchTerm = null);
+    Task<IEnumerable<(int AnimalId, string AnimalName, DateTime? LastExamDate)>> GetAnimalsWithoutRecentExamAsync(DateTime threshold);
 }

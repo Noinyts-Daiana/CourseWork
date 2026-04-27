@@ -6,9 +6,10 @@ using CourseWork.Repositories.Interfaces;
 
 namespace CourseWork.Services;
 
-public class SystemAlertService(ISystemAlertRepository alertRepository, 
+public class SystemAlertService(ISystemAlertRepository alertRepository,
     IVaccinationRepository vaccinationRepository,
-    ITransactionRepository transactionRepository  
+    ITransactionRepository transactionRepository,
+    IMedicalExamRepository medicalExamRepository
 ) : ISystemAlertService
 {
     public async Task<IEnumerable<SystemAlertDto>> GetAllAsync(bool? isDone, int pageNumber, int pageSize)
@@ -55,6 +56,7 @@ public class SystemAlertService(ISystemAlertRepository alertRepository,
     public async Task GenerateAutomaticAlertsAsync()
     {
         await CheckVaccinationAlerts();
+        await CheckMedicalExamAlerts();
         await CheckFinancialStatus();
     }
 
@@ -85,6 +87,36 @@ public class SystemAlertService(ISystemAlertRepository alertRepository,
                     IsAuto = true,
                     CreatedAt = DateTime.UtcNow,
                     IsDone = false
+                });
+            }
+        }
+    }
+
+    private async Task CheckMedicalExamAlerts()
+    {
+        var today = DateTime.UtcNow.Date;
+        var threshold = today.AddDays(-30);
+
+        // Отримуємо тварин, яким не робили огляд понад 30 днів (або взагалі ніколи)
+        var animalsWithoutExam = await medicalExamRepository.GetAnimalsWithoutRecentExamAsync(threshold);
+
+        foreach (var (animalId, animalName, lastExamDate) in animalsWithoutExam)
+        {
+            string msg = lastExamDate.HasValue
+                ? $"Тварина {animalName} не проходила медогляд з {lastExamDate.Value:dd.MM.yyyy} (понад 30 днів)."
+                : $"Тварина {animalName} ніколи не проходила медогляд.";
+
+            bool alertExists = await alertRepository.CheckIfExistsAsync(msg, today);
+            if (!alertExists)
+            {
+                await alertRepository.AddAsync(new SystemAlerts
+                {
+                    Message  = msg,
+                    Type     = "medical",
+                    Severity = lastExamDate.HasValue ? "warning" : "danger",
+                    IsAuto   = true,
+                    CreatedAt = DateTime.UtcNow,
+                    IsDone   = false
                 });
             }
         }

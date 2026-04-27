@@ -107,6 +107,7 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IAnimalPhotoService, AnimalPhotoService>();
 builder.Services.AddScoped<ISystemAlertService, SystemAlertService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddHostedService<AlertBackgroundService>();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 
