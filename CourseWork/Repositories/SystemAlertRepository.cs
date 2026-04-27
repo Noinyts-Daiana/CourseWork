@@ -44,7 +44,8 @@ public class SystemAlertRepository(AppDbContext context, IHubContext<AlertHub> h
     }
     public async Task<bool> CheckIfExistsAsync(string message, DateTime date)
     {
+        var since = date.AddDays(-7);
         return await context.SystemAlerts
-            .AnyAsync(a => a.Message.Contains(message) && a.CreatedAt.Date == date && !a.IsDone);
+            .AnyAsync(a => a.Message == message && a.CreatedAt >= since && !a.IsDone);
     }
 }
