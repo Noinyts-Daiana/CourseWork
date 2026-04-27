@@ -226,10 +226,10 @@ public class DashboardController(AppDbContext context) : ControllerBase
             {
                 id = (int?)a.Id,
                 type = a.Type ?? "info",
-                severity = "info",
+                severity = a.Severity ?? "info",
                 message = a.Message ?? "",
                 relatedEntityId = (int?)null,
-                createdAt = DateTime.UtcNow,
+                createdAt = a.CreatedAt,
                 isDone = a.IsDone,
                 isAuto = false
             }).ToList();

@@ -2,6 +2,7 @@
 using CourseWork.DTOs;
 using CourseWork.Services.Interfaces;
 using CourseWork.Attributes;
+using CourseWork.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ namespace CourseWork.Controllers;
 [ApiController]
 [Route("api/feeding-log")]
 [Authorize]
-public class FeedingLogController(IFeedingLogService feedingLogService) : ControllerBase
+public class FeedingLogController(IFeedingLogService feedingLogService,  ISystemAlertService systemAlertService) : ControllerBase
 {
     [HttpPost]
     [RequirePermission("FeedAnimal")]
