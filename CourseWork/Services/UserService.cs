@@ -14,7 +14,8 @@ public class UserService(IUserRepository userRepository, ISystemAlertService ale
         return users.Select(u => new UserDto
         {
             UserId = u.Id,
-            FullName = u.FullName,
+            FirstName = u.FirstName,   
+            LastName = u.LastName, 
             Email = u.Email,
             RoleId = u.RoleId,
             RoleName = u.Role?.Name ?? "Немає ролі",
@@ -115,7 +116,9 @@ public class UserService(IUserRepository userRepository, ISystemAlertService ale
             return null;
         }
 
-        existingUser.FullName = userDto.FullName;
+        
+        existingUser.FirstName = userDto.FirstName;
+        existingUser.LastName = userDto.LastName;
         existingUser.Email = userDto.Email;
         existingUser.RoleId = userDto.RoleId;
         existingUser.IsActive = userDto.IsActive;

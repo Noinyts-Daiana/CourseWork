@@ -10,10 +10,18 @@ public class User
     [Key] 
     public int Id { get; set; }
     
-    [Required]
-    [Column("full_name")] 
-    public string FullName { get; set; } = string.Empty;
     
+    
+    [Required]
+    [Column("first_name")] 
+    public string FirstName { get; set; } = string.Empty;
+    
+    [Required]
+    [Column("last_name")] 
+    public string LastName { get; set; } = string.Empty;
+    
+    [NotMapped]
+    public string FullName => $"{FirstName} {LastName}";
     [Required]
     [Column("email")]
     public string Email { get; set; } = string.Empty; 

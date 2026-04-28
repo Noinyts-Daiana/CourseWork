@@ -7,6 +7,7 @@ public class PermissionService(AppDbContext context) : IPermissionService
 {
     public async Task<bool> RoleHasPermissionAsync(int roleId, string permissionName)
     {
+        Console.WriteLine($"Перевірка: Роль {roleId}, Дозвіл {permissionName}");
         return await context.RolePermission
             .Join(context.Permission,
                 rp => rp.PermissionId,

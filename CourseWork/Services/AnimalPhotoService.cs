@@ -7,6 +7,7 @@ using CourseWork.Services.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 
 namespace CourseWork.Services;
+
 public class AnimalPhotoService(
     IAnimalPhotoRepository photoRepository,
     IWebHostEnvironment environment) : IAnimalPhotoService
@@ -18,12 +19,13 @@ public class AnimalPhotoService(
 
         var rootPath = environment.WebRootPath ?? Path.Combine(environment.ContentRootPath, "wwwroot");
 
-        var uploadsFolder = Path.Combine(rootPath, "images", "animals");
+        // Підпапка для кожної тварини: images/animals/{animalId}/
+        var uploadsFolder = Path.Combine(rootPath, "images", "animals", dto.AnimalId.ToString());
 
         if (!Directory.Exists(uploadsFolder))
             Directory.CreateDirectory(uploadsFolder);
 
-        var uniqueFileName = Guid.NewGuid().ToString() + "_" + dto.File.FileName;
+        var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(dto.File.FileName);
         var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
         using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -39,7 +41,7 @@ public class AnimalPhotoService(
         var photo = new AnimalPhoto
         {
             AnimalId = dto.AnimalId,
-            FilePath = $"/images/animals/{uniqueFileName}",
+            FilePath = $"/images/animals/{dto.AnimalId}/{uniqueFileName}",
             IsMain = dto.IsMain,
             CreatedAt = DateTime.UtcNow
         };
@@ -81,6 +83,4 @@ public class AnimalPhotoService(
         photo.IsMain = true;
         await photoRepository.SaveChangesAsync();
     }
-    
-    
 }

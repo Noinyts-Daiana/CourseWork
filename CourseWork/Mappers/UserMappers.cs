@@ -10,7 +10,8 @@ public static class UserMappers
         return new UserDto()
         {
             UserId = user.Id,
-            FullName = user.FullName,
+            FirstName = user.FirstName,   
+            LastName = user.LastName,     
             Email = user.Email,
             RoleId = user.RoleId,
             RoleName = user.Role?.Name,
@@ -24,7 +25,8 @@ public static class UserMappers
     {
         return new User
         {
-            FullName = dto.FullName,
+            FirstName = dto.FirstName,   
+            LastName = dto.LastName,      
             Email = dto.Email,
             Password = dto.Password ?? string.Empty,
             RoleId = dto.RoleId,

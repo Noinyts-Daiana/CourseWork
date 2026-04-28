@@ -7,6 +7,7 @@ namespace CourseWork.Models;
 public class Permission
 {
     [Key]
+    
     public int Id { get; set; }
     
     [Required]

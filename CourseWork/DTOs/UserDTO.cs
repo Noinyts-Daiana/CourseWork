@@ -5,10 +5,10 @@ namespace CourseWork.DTOs;
 public class UserDto
 {
     public int UserId { get; set; }
-    
-    [Required(ErrorMessage = "Ім'я обов'язкове")]
-    public string FullName { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
 
+    public string FullName => $"{FirstName} {LastName}";
     [Required(ErrorMessage = "Email обов'язковий")]
     [EmailAddress(ErrorMessage = "Неправильний формат")]
     public string Email { get; set; } = string.Empty;

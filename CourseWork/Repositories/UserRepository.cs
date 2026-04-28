@@ -38,7 +38,9 @@ public class UserRepository(AppDbContext context): IUserRepository
         {
             var term = searchTerm.ToLower();
             query = query.Where(u => 
-                u.FullName.ToLower().Contains(term) || 
+                (u.FirstName + " " + u.LastName).ToLower().Contains(term) || 
+                u.FirstName.ToLower().Contains(term) ||
+                u.LastName.ToLower().Contains(term) ||
                 u.Email.ToLower().Contains(term));
         }
 
@@ -80,7 +82,9 @@ public class UserRepository(AppDbContext context): IUserRepository
             userInDb.Email = user.Email; 
         }
 
-        userInDb.FullName = user.FullName;
+        
+        userInDb.FirstName = user.FirstName;
+        userInDb.LastName = user.LastName;
 
         try 
         {
@@ -127,7 +131,11 @@ public class UserRepository(AppDbContext context): IUserRepository
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             var term = searchTerm.ToLower();
-            query = query.Where(u => u.FullName.ToLower().Contains(term) || u.Email.ToLower().Contains(term));
+            query = query.Where(u => 
+                (u.FirstName + " " + u.LastName).ToLower().Contains(term) ||
+                u.FirstName.ToLower().Contains(term) ||
+                u.LastName.ToLower().Contains(term) ||
+                u.Email.ToLower().Contains(term));
         }
 
         return await query.CountAsync();
