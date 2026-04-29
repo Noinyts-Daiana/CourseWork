@@ -22,7 +22,12 @@ public class VaccinationRepository(AppDbContext context) : IVaccinationRepositor
         ;
 
         int skip = (pageNumber - 1) * pageSize;
-        return await context.Vaccination.Include(m => m.Animal).Skip(skip).Take(pageSize).ToListAsync();
+        return await context.Vaccination
+            .Include(m => m.Animal)
+            .Skip(skip)
+            .OrderByDescending(v=>v.Id)
+            .Take(pageSize)
+            .ToListAsync();
     }
 
     public async Task<Vaccination?> GetVaccinationAsync(int id)
