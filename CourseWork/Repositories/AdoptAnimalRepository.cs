@@ -73,9 +73,14 @@ public class AdoptAnimalRepository(AppDbContext context): IAdoptAnimalRepository
             .Select(g => g.OrderByDescending(x => x.Id).First()) 
             .ToList();
     }
+
     public async Task<bool> IsAnimalAlreadyAdoptedAsync(int animalId)
     {
-        return await context.AdoptAnimal
-            .AnyAsync(a => a.AnimalId == animalId && a.Status == AdoptionStatus.Adopted);
+        var lastRecord = await context.AdoptAnimal
+            .Where(a => a.AnimalId == animalId)
+            .OrderByDescending(a => a.Id)
+            .FirstOrDefaultAsync();
+
+        return lastRecord != null && lastRecord.Status == AdoptionStatus.Adopted;
     }
 }
